@@ -1,0 +1,49 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1' // Для сборки в JAR
+
+    id("io.freefair.lombok") version "8.13"
+}
+
+group = 'net.ceyzel'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'papermc'
+        url = 'https://repo.papermc.io/repository/maven-public/'
+    } // PaperMC
+    maven { url = 'https://oss.sonatype.org/content/groups/public/' } // Sonatype
+    maven { url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/' } // PlaceholderAPI
+}
+
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT' // Базовый API Bukkit/Paper
+    compileOnly 'me.clip:placeholderapi:2.11.6' // PlaceholderAPI
+
+    // Для работы с YAML и сериализацией Location
+    implementation 'org.spongepowered:configurate-yaml:4.1.2'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21) // Явное указание Java 17
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release.set(21) // Указываем целевую версию Java
+}
+
+processResources {
+    filesMatching('plugin.yml') {
+        expand(version: version)
+    }
+    filteringCharset = 'UTF-8'
+}
+
+shadowJar {
+    archiveFileName = "CeyzelParkour-${version}.jar"
+}
