@@ -1,8 +1,8 @@
 lobby_location:
-  world: world
-  x: 0
-  y: 0
-  z: 0
+  world: "world"
+  x: 0.0
+  y: 0.0
+  z: 0.0
   yaw: 90.0  # Поворот
   pitch: 0.0 # Наклон
 
@@ -13,6 +13,8 @@ hub_location:
   z: 0
   yaw: 90.0
   pitch: 0.0
+
+fuck: you
 
 test:
   start:

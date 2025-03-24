@@ -1,11 +1,13 @@
 package net.ceyzel.parkour;
 
+import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.NumberConversions;
 
 import java.util.*;
 
@@ -29,6 +31,9 @@ public class CeyZelParkour extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ParkourListener(this), this);
         Bukkit.getScheduler().runTaskTimer(this, this::updateActionBars, 0L, 20L);
         LobbyHub.RegisterCommands(this);
+        System.out.print("lobby_location: ");
+        System.out.println(lobby_location);
+        System.out.println(this.config.getString("fuck"));
     }
 
     @Override
@@ -64,13 +69,19 @@ public class CeyZelParkour extends JavaPlugin {
 
     private void loadLocationsFromConfig() {
         if (config.contains("lobby_location")) {
-            lobby_location = config.getLocation("lobby_location");
+            this.lobby_location = new Location(
+                    Bukkit.getWorld(config.getString("lobby_location.world")),
+                    config.getDouble("lobby_location.x"),
+                    config.getDouble("lobby_location.y"),
+                    config.getDouble("lobby_location.z"),
+                    (float) config.getDouble("lobby_location.yaw"),
+                    (float) config.getDouble("lobby_location.pitch"));
         } else {
             getLogger().warning("lobby_location не найден в конфиге. Установите значение в конфиге.");
         }
 
         if (config.contains("hub_location")) {
-            hub_location = config.getLocation("hub_location");
+            this.hub_location = config.getLocation("hub_location");
         } else {
             getLogger().warning("hub_location не найден в конфиге. Установите значение в конфиге.");
         }
