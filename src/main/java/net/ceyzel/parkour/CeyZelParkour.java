@@ -18,7 +18,6 @@ public class CeyZelParkour extends JavaPlugin {
     private Map<String, ParkourMap> parkourMaps = new HashMap<>();
 
     public Location lobby_location;
-    public Location hub_location;
 
     @Override
     public void onEnable() {
