@@ -23,7 +23,7 @@ test:
       x: 999.5
       y: 65.0
       z: 69.5
-    - world: world
+    - world: maps
       x: 1488.5
       y: 66.0
       z: 0.5

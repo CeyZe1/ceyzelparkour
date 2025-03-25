@@ -3,12 +3,14 @@ package net.ceyzel.parkour;
 import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.NumberConversions;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class CeyZelParkour extends JavaPlugin {
@@ -25,6 +27,10 @@ public class CeyZelParkour extends JavaPlugin {
         saveDefaultConfig();
         this.config = getConfig();
         loadMaps();
+        for (var k : parkourMaps.values()) {
+            System.out.println(k.getCheckpoints());
+        }
+        ;
         loadLocationsFromConfig();
         getCommand("ceyzel").setExecutor(new ParkourCommand(this));
         Bukkit.getPluginManager().registerEvents(new ParkourListener(this), this);
@@ -63,15 +69,37 @@ public class CeyZelParkour extends JavaPlugin {
         return playerScores.getOrDefault(playerId, 0.0);
     }
 
+    private @Nullable Location locationByPath(String path) {
+        if (config.getString(path + ".world") instanceof String a) {
+            return new Location(
+                    Bukkit.getWorld(a),
+                    config.getDouble(path + ".x"),
+                    config.getDouble(path + ".y"),
+                    config.getDouble(path + ".z"),
+                    (float) config.getDouble(path + ".yaw"),
+                    (float) config.getDouble(path + ".pitch"));
+        }
+        this.getLogger().warning(String.format("%s не является валидной локацией", path));
+        return null;
+    }
+
+    private static @Nullable Location locationFromMap(LinkedHashMap<String, Object> map) {
+        Location loc = null;
+        if (
+                map.get("world") instanceof String worldname &&
+                map.get("x") instanceof Double x &&
+                map.get("y") instanceof Double y &&
+                map.get("z") instanceof Double z &&
+                Bukkit.getWorld(worldname) instanceof World world
+        ) {
+            loc = new Location(world, x, y, z);
+        }
+        return loc;
+    }
+
     private void loadLocationsFromConfig() {
         if (config.contains("lobby_location")) {
-            this.lobby_location = new Location(
-                    Bukkit.getWorld(config.getString("lobby_location.world")),
-                    config.getDouble("lobby_location.x"),
-                    config.getDouble("lobby_location.y"),
-                    config.getDouble("lobby_location.z"),
-                    (float) config.getDouble("lobby_location.yaw"),
-                    (float) config.getDouble("lobby_location.pitch"));
+            this.lobby_location = locationByPath("lobby_location");
         } else {
             getLogger().warning("lobby_location не найден в конфиге. Установите значение в конфиге.");
         }
@@ -80,13 +108,17 @@ public class CeyZelParkour extends JavaPlugin {
     public void loadMaps() {
         for (String mapName : config.getKeys(false)) {
             if (config.contains(mapName + ".start") && config.contains(mapName + ".finish")) {
-                Location start = config.getLocation(mapName + ".start");
-                Location finish = config.getLocation(mapName + ".finish");
+                Location start = locationByPath(mapName + ".start");
+                Location finish = locationByPath(mapName + ".finish");
                 double score = config.getDouble(mapName + ".score");
-                List<Location> checkpoints = (List<Location>) config.getList(mapName + ".checkpoints");
+                var checkpoints = (List<LinkedHashMap<String, Object>>) config.getList(mapName + ".checkpoints");
+                var checkpointsList = new ArrayList<Location>();
+                for (var a : checkpoints) {
+                    checkpointsList.add(locationFromMap(a));
+                }
 
                 if (start != null && finish != null) {
-                    ParkourMap map = new ParkourMap(mapName, start, finish, score, checkpoints);
+                    ParkourMap map = new ParkourMap(mapName, start, finish, score, checkpointsList);
                     this.parkourMaps.put(mapName, map);
                 } else {
                     getLogger().warning("Не удалось загрузить карту " + mapName + ": стартовая или конечная точка не найдены.");
