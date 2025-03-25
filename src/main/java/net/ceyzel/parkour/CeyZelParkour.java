@@ -31,9 +31,6 @@ public class CeyZelParkour extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ParkourListener(this), this);
         Bukkit.getScheduler().runTaskTimer(this, this::updateActionBars, 0L, 20L);
         LobbyHub.RegisterCommands(this);
-        System.out.print("lobby_location: ");
-        System.out.println(lobby_location);
-        System.out.println(this.config.getString("fuck"));
     }
 
     @Override
@@ -78,12 +75,6 @@ public class CeyZelParkour extends JavaPlugin {
                     (float) config.getDouble("lobby_location.pitch"));
         } else {
             getLogger().warning("lobby_location не найден в конфиге. Установите значение в конфиге.");
-        }
-
-        if (config.contains("hub_location")) {
-            this.hub_location = config.getLocation("hub_location");
-        } else {
-            getLogger().warning("hub_location не найден в конфиге. Установите значение в конфиге.");
         }
     }
 
