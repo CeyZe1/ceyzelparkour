@@ -41,6 +41,10 @@ public class ParkourSession {
         return mapName;
     }
 
+    public void setLastCheckpoint(Location lastCheckpoint) {
+        this.lastCheckpoint = lastCheckpoint;
+    }
+
     public void setMapName(String mapName) {
         this.mapName = mapName;
     }

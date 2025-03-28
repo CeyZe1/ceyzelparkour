@@ -70,9 +70,10 @@ public class CeyZelParkour extends JavaPlugin {
     }
 
     private @Nullable Location locationByPath(String path) {
-        if (config.getString(path + ".world") instanceof String a) {
+        String worldName = config.getString(path + ".world");
+        if (worldName != null && Bukkit.getWorld(worldName) != null) {  // Add null check
             return new Location(
-                    Bukkit.getWorld(a),
+                    Bukkit.getWorld(worldName),
                     config.getDouble(path + ".x"),
                     config.getDouble(path + ".y"),
                     config.getDouble(path + ".z"),
@@ -83,27 +84,35 @@ public class CeyZelParkour extends JavaPlugin {
         return null;
     }
 
+
     private static @Nullable Location locationFromMap(LinkedHashMap<String, Object> map) {
-        Location loc = null;
+        if (map == null) {
+            return null;
+        }
         if (
                 map.get("world") instanceof String worldname &&
-                map.get("x") instanceof Double x &&
-                map.get("y") instanceof Double y &&
-                map.get("z") instanceof Double z &&
-                Bukkit.getWorld(worldname) instanceof World world
+                        map.get("x") instanceof Double x &&
+                        map.get("y") instanceof Double y &&
+                        map.get("z") instanceof Double z &&
+                        Bukkit.getWorld(worldname) instanceof World world
         ) {
-            loc = new Location(world, x, y, z);
+            return new Location(world, x, y, z);
         }
-        return loc;
+        return null;
     }
+
 
     private void loadLocationsFromConfig() {
         if (config.contains("lobby_location")) {
             this.lobby_location = locationByPath("lobby_location");
+            if (this.lobby_location == null) {  // Add null check
+                getLogger().warning("lobby_location не является валидной локацией.");
+            }
         } else {
             getLogger().warning("lobby_location не найден в конфиге. Установите значение в конфиге.");
         }
     }
+
 
     public void loadMaps() {
         for (String mapName : config.getKeys(false)) {
@@ -113,8 +122,10 @@ public class CeyZelParkour extends JavaPlugin {
                 double score = config.getDouble(mapName + ".score");
                 var checkpoints = (List<LinkedHashMap<String, Object>>) config.getList(mapName + ".checkpoints");
                 var checkpointsList = new ArrayList<Location>();
-                for (var a : checkpoints) {
-                    checkpointsList.add(locationFromMap(a));
+                if (checkpoints != null) {
+                    for (var a : checkpoints) {
+                        checkpointsList.add(locationFromMap(a));
+                    }
                 }
 
                 if (start != null && finish != null) {
@@ -127,7 +138,12 @@ public class CeyZelParkour extends JavaPlugin {
         }
     }
 
+
     public void saveMap(ParkourMap map) {
+        if (map == null) {
+            getLogger().warning("null");
+            return;
+        }
         config.set(map.getName() + ".start", map.getStart());
         config.set(map.getName() + ".finish", map.getFinish());
         config.set(map.getName() + ".score", map.getScore());
@@ -135,17 +151,33 @@ public class CeyZelParkour extends JavaPlugin {
         saveConfig();
     }
 
+
     public ParkourMap getMap(String name) {
+        if (parkourMaps == null) {
+            getLogger().warning("null");
+            return null;
+        }
         return parkourMaps.get(name);
     }
 
+
     public Map<String, ParkourMap> getMaps() {
+        if (parkourMaps == null) {
+            getLogger().warning("null");
+            return new HashMap<>();
+        }
         return parkourMaps;
     }
 
+
     public Map<UUID, ParkourSession> getActiveSessions() {
+        if (activeSessions == null) {
+            getLogger().warning("null");
+            return new HashMap<>();
+        }
         return this.activeSessions;
     }
+
 
     private void updateActionBars() {
         for (ParkourSession session : activeSessions.values()) {
@@ -157,9 +189,15 @@ public class CeyZelParkour extends JavaPlugin {
         }
     }
 
+
     public Map<String, ParkourMap> getParkourMaps() {
+        if (parkourMaps == null) {
+            getLogger().warning("null");
+            return new HashMap<>();
+        }
         return parkourMaps;
     }
+
 
     public void setParkourMaps(Map<String, ParkourMap> parkourMaps) {
         this.parkourMaps = parkourMaps;

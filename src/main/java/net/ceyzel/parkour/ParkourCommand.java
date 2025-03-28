@@ -8,6 +8,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import net.ceyzel.parkour.CeyZelParkour;
+import net.ceyzel.parkour.ParkourMap;
+import net.ceyzel.parkour.ParkourSession;
+
 import java.util.*;
 
 public class ParkourCommand implements CommandExecutor {
@@ -226,6 +230,7 @@ public class ParkourCommand implements CommandExecutor {
         plugin.getActiveSessions().put(playerId, session);
         player.sendMessage(ChatColor.GREEN + "Вы зашли на карту");
     }
+
 
     private boolean checkPermission(CommandSender sender, String permission) {
         if (!sender.hasPermission(permission)) {

@@ -1,6 +1,7 @@
 package net.ceyzel.parkour;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -37,7 +38,7 @@ public class ParkourListener implements Listener {
             ParkourMap map = plugin.getMap(session.getMapName());
 
             // Если игрок наступил на финиш
-            if (map.getFinish().equals(event.getTo())) {
+            if (map != null && map.getFinish() != null && map.getFinish().equals(event.getTo())) {  // Add null checks
                 plugin.addPlayerScore(player.getUniqueId(), map.getScore());
                 player.sendMessage("Карта пройдена, вы получаете " + map.getScore() + "поинтов");
             }

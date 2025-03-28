@@ -2,6 +2,7 @@ package net.ceyzel.parkour;
 
 import org.bukkit.Location;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ParkourMap {
@@ -60,6 +61,9 @@ public class ParkourMap {
     }
 
     public void addCheckpoint(Location blockLocation) {
-
+        if (checkpoints == null) {
+            checkpoints = new ArrayList<>();
+        }
+        checkpoints.add(blockLocation);
     }
 }

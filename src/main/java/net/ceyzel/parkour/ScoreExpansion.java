@@ -28,9 +28,13 @@ public class ScoreExpansion extends PlaceholderExpansion {
 
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String params) {
+        if (player == null) {
+            return null;
+        }
         if (params.equalsIgnoreCase("player_score_maps")) {
             return String.valueOf(plugin.getPlayerTotalScore(player.getUniqueId()));
         }
         return null;
     }
+
 }

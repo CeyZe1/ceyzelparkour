@@ -11,8 +11,13 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 
 public class LobbyHub {
     public static void RegisterCommands(CeyZelParkour plugin) {
-
-        BasicCommand lobby = (commandSourceStack, strings) -> commandSourceStack.getExecutor().teleport(plugin.lobby_location);
+        BasicCommand lobby = (commandSourceStack, strings) -> {
+            if (plugin.lobby_location != null) {  // Add null check
+                commandSourceStack.getExecutor().teleport(plugin.lobby_location);
+            } else {
+                commandSourceStack.getExecutor().sendMessage("Lobby location is not set!");
+            }
+        };
 
         plugin.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             var reg = commands.registrar();
@@ -21,5 +26,3 @@ public class LobbyHub {
         });
     }
 }
-
-
