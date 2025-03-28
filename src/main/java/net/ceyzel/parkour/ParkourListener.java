@@ -37,10 +37,21 @@ public class ParkourListener implements Listener {
         if (session != null && event.getTo().getBlock().getType() == Material.STONE_PRESSURE_PLATE) {
             ParkourMap map = plugin.getMap(session.getMapName());
 
-            // Если игрок наступил на финиш
-            if (map != null && map.getFinish() != null && map.getFinish().equals(event.getTo())) {  // Add null checks
+            if (map != null && map.getFinish() != null && map.getFinish().equals(event.getTo())) {
                 plugin.addPlayerScore(player.getUniqueId(), map.getScore());
-                player.sendMessage("Карта пройдена, вы получаете " + map.getScore() + "поинтов");
+                player.sendMessage("Карта пройдена, вы получаете " + map.getScore() + " поинтов");
+                plugin.getActiveSessions().remove(player.getUniqueId());
+            }
+
+            // Если игрок наступил на чекпоинт
+            if (map != null && map.getCheckpoints() != null) {
+                for (Location checkpoint : map.getCheckpoints()) {
+                    if (checkpoint != null && checkpoint.equals(event.getTo())) {
+                        session.setLastCheckpoint(checkpoint);
+                        player.sendMessage("Чекпоинт сохранен!");
+                        break;
+                    }
+                }
             }
         }
     }

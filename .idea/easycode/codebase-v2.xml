@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="com.obiscr.chatgpt.settings.EasyCodeState">
+    <option name="projectFiles" value="$PROJECT_DIR$/src/main/java/net/ceyzel/parkour/CeyZelParkour.java;C:/Users/olegk/IdeaProjects/ceyzelparkoura/src/main/java/net/ceyzel/parkour/LobbyHub.java;C:/Users/olegk/IdeaProjects/ceyzelparkoura/src/main/java/net/ceyzel/parkour/ParkourCommand.java;C:/Users/olegk/IdeaProjects/ceyzelparkoura/src/main/java/net/ceyzel/parkour/ParkourListener.java;C:/Users/olegk/IdeaProjects/ceyzelparkoura/src/main/java/net/ceyzel/parkour/ParkourMap.java;C:/Users/olegk/IdeaProjects/ceyzelparkoura/src/main/java/net/ceyzel/parkour/ParkourSession.java;C:/Users/olegk/IdeaProjects/ceyzelparkoura/src/main/java/net/ceyzel/parkour/ScoreExpansion.java;C:/Users/olegk/IdeaProjects/ceyzelparkoura/README.md;C:/Users/olegk/IdeaProjects/ceyzelparkoura/settings.gradle.kts" />
+  </component>
+</project>

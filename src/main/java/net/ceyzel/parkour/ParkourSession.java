@@ -14,7 +14,7 @@ public class ParkourSession {
         this.playerId = playerId;
         this.startTime = System.currentTimeMillis();
         this.mapName = mapName;
-        this.lastCheckpoint = start;
+        this.lastCheckpoint = start; // Устанавливаем стартовую точку как первый чекпоинт
     }
 
     public @NotNull Location getLastCheckpoint() {

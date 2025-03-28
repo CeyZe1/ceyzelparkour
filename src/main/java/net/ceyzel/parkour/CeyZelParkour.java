@@ -138,7 +138,6 @@ public class CeyZelParkour extends JavaPlugin {
         }
     }
 
-
     public void saveMap(ParkourMap map) {
         if (map == null) {
             getLogger().warning("null");

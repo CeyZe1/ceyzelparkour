@@ -14,6 +14,7 @@ public class ParkourMap {
 
     public ParkourMap(String name) {
         this.name = name;
+        this.checkpoints = new ArrayList<>();
     }
 
     public ParkourMap(String name, Location start, Location finish, double score, List<Location> checkpoints) {

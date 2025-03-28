@@ -232,6 +232,7 @@ public class ParkourCommand implements CommandExecutor {
     }
 
 
+
     private boolean checkPermission(CommandSender sender, String permission) {
         if (!sender.hasPermission(permission)) {
             sender.sendMessage(ChatColor.RED + "Недостаточно прав!");
