@@ -17,6 +17,6 @@ commands:
     usage: /lobby
     permission: ceyzelparkour.lobby
   kill:
-    description: жопа
+    description: залупа
     usage: /kill
     permission: ceyzelparkour.kill
