@@ -87,26 +87,9 @@ public class CeyZelParkour extends JavaPlugin {
     }
 
 
-    private static @Nullable Location locationFromMap(LinkedHashMap<String, Object> map) {
-        if (map == null) {
-            return null;
-        }
-        if (
-                map.get("world") instanceof String worldname &&
-                        map.get("x") instanceof Double x &&
-                        map.get("y") instanceof Double y &&
-                        map.get("z") instanceof Double z &&
-                        Bukkit.getWorld(worldname) instanceof World world
-        ) {
-            return new Location(world, x, y, z);
-        }
-        return null;
-    }
-
-
     private void loadLocationsFromConfig() {
         if (config.contains("lobby_location")) {
-            this.lobby_location = locationByPath("lobby_location");
+            this.lobby_location = config.getLocation("lobby_location");
             if (this.lobby_location == null) {  // Add null check
                 getLogger().warning("lobby_location не является валидной локацией.");
             }
@@ -119,19 +102,13 @@ public class CeyZelParkour extends JavaPlugin {
     public void loadMaps() {
         for (String mapName : config.getKeys(false)) {
             if (config.contains(mapName + ".start") && config.contains(mapName + ".finish")) {
-                Location start = locationByPath(mapName + ".start");
-                Location finish = locationByPath(mapName + ".finish");
+                Location start = config.getLocation(mapName + ".start");
+                Location finish = config.getLocation(mapName + ".finish");
                 double score = config.getDouble(mapName + ".score");
-                var checkpoints = (List<LinkedHashMap<String, Object>>) config.getList(mapName + ".checkpoints");
-                var checkpointsList = new ArrayList<Location>();
-                if (checkpoints != null) {
-                    for (var a : checkpoints) {
-                        checkpointsList.add(locationFromMap(a));
-                    }
-                }
+                var checkpoints = (List<Location>) config.getList(mapName + ".checkpoints");
 
                 if (start != null && finish != null) {
-                    ParkourMap map = new ParkourMap(mapName, start, finish, score, checkpointsList);
+                    ParkourMap map = new ParkourMap(mapName, start, finish, score, checkpoints);
                     this.parkourMaps.put(mapName, map);
                 } else {
                     getLogger().warning("Не удалось загрузить карту " + mapName + ": стартовая или конечная точка не найдены.");
@@ -199,10 +176,6 @@ public class CeyZelParkour extends JavaPlugin {
         return parkourMaps;
     }
 
-
-    public void setParkourMaps(Map<String, ParkourMap> parkourMaps) {
-        this.parkourMaps = parkourMaps;
-    }
 
     public void addMapCompletion(UUID playerId, String mapName, long time) {
         playerMapCompletions.computeIfAbsent(playerId, k -> new HashMap<>()).merge(mapName, 1, Integer::sum);
