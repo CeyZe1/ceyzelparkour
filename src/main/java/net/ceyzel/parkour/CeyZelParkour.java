@@ -1,7 +1,10 @@
 package net.ceyzel.parkour;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
 import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -45,11 +48,10 @@ public class CeyZelParkour extends JavaPlugin {
             getLogger().severe("Команда 'mapinfo' не найдена в plugin.yml!");
         }
 
-        if (getCommand("join") != null) {
-            getCommand("join").setExecutor(new ParkourCommand(this));
-        } else {
-            getLogger().severe("Команда 'join' не найдена в plugin.yml!");
-        }
+        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
+            var reg = commands.registrar();
+            reg.register(ParkourCommand.coolJoinCommand(this));
+        });
 
         Bukkit.getPluginManager().registerEvents(new ParkourListener(this), this);
         Bukkit.getScheduler().runTaskTimer(this, this::updateActionBars, 0L, 20L);
@@ -136,8 +138,12 @@ public class CeyZelParkour extends JavaPlugin {
             getLogger().warning("null");
             return;
         }
-        config.set(map.getName() + ".start", map.getStart().getLocation());
-        config.set(map.getName() + ".finish", map.getFinish().getLocation());
+        if(map.getStart() != null) {
+            config.set(map.getName() + ".start", map.getStart().getLocation());
+        }
+        if(map.getFinish() != null) {
+            config.set(map.getName() + ".finish", map.getFinish().getLocation());
+        }
         config.set(map.getName() + ".score", map.getScore());
 
         List<Location> checkpointLocations = new ArrayList<>();

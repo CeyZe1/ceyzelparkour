@@ -1,5 +1,8 @@
 package net.ceyzel.parkour;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,6 +21,49 @@ public class ParkourCommand implements CommandExecutor {
 
     public ParkourCommand(CeyZelParkour plugin) {
         this.plugin = plugin;
+    }
+
+    public static LiteralCommandNode coolJoinCommand(CeyZelParkour plugin) {
+        return Commands.literal("join")
+                .requires(ctx -> ctx.getSender().hasPermission("ceyzel.join"))
+                .executes(ctx -> {
+                    ctx.getSource().getSender().sendMessage("Use /join <map>");
+                    return 0;
+                })
+                .then(Commands.argument("map", StringArgumentType.string()).suggests((ctx, builder)->{
+                    plugin.getParkourMaps().keySet()
+                            .stream()
+                            .filter(entry->entry.toLowerCase().startsWith(builder.getRemainingLowerCase()))
+                            .forEach(builder::suggest);
+                    return builder.buildFuture();
+                }).executes(ctx -> {
+                            if(ctx.getSource().getSender() instanceof Player player) {
+                                ParkourMap map = plugin.getParkourMaps().get(ctx.getArgument("map", String.class));
+                                if (map == null) {
+                                    player.sendMessage(ChatColor.RED + "Карта не найдена!");
+                                    return 0;
+                                }
+
+                                if (map.getStart() == null) {
+                                    player.sendMessage(ChatColor.RED + "Стартовая точка не установлена!");
+                                    return 0;
+                                }
+
+                                UUID playerId = player.getUniqueId();
+                                if (plugin.getActiveSessions().containsKey(playerId)) {
+                                    player.sendMessage(ChatColor.RED + "Вы уже на карте");
+                                    return 0;
+                                }
+
+                                player.teleport(map.getStart().getLocation());
+                                ParkourSession session = new ParkourSession(playerId, map.getName(), map.getStart());
+                                plugin.getActiveSessions().put(playerId, session);
+                                player.sendMessage(ChatColor.GREEN + "Вы зашли на карту");
+                                return 1;
+                            }
+                            return 0;
+                        }
+                )).build();
     }
 
     @Override
@@ -42,9 +88,6 @@ public class ParkourCommand implements CommandExecutor {
                 break;
             case "setscore":
                 handleSetScoreCommand(sender, args);
-                break;
-            case "join":
-                handleJoinCommand(sender, args);
                 break;
             case "remove":
                 handleRemoveCommand(sender, args);
@@ -81,8 +124,11 @@ public class ParkourCommand implements CommandExecutor {
             return;
         }
 
+        sender.sendMessage("1");
         ParkourMap newMap = new ParkourMap(mapName);
+        sender.sendMessage("1");
         plugin.getParkourMaps().put(mapName, newMap);
+        sender.sendMessage("1");
         plugin.saveMap(newMap);
         sender.sendMessage(ChatColor.GREEN + "Карта '" + mapName + "' создана!");
     }
