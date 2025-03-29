@@ -9,3 +9,4 @@
 - [ ] /ceyzel setdifficult - удалить setscore. Сложность Easy - 2 point, Medium - 5 point, Hard - 10 point, Insane - 25 point
 - [ ] /party
 - [ ] Таймер
+- [ ] Когда нибудь сделать так, чтобы конфиг рандомно не перезаписывался
