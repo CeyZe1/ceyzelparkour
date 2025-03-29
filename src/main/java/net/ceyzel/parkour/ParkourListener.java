@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.Sound;
 
 public class ParkourListener implements Listener {
     private final CeyZelParkour plugin;
@@ -34,7 +35,7 @@ public class ParkourListener implements Listener {
         Player player = event.getPlayer();
         ParkourSession session = plugin.getActiveSessions().get(player.getUniqueId());
 
-        if (session != null && event.getTo().getBlock().getType() == Material.STONE_PRESSURE_PLATE) {
+        if (session != null && event.getTo().getBlock().getType() == Material.HEAVY_WEIGHTED_PRESSURE_PLATE) {
             ParkourMap map = plugin.getMap(session.getMapName());
 
             if (map != null && map.getFinish() != null && map.getFinish().equals(event.getTo())) {
@@ -49,6 +50,7 @@ public class ParkourListener implements Listener {
                     if (checkpoint != null && checkpoint.equals(event.getTo())) {
                         session.setLastCheckpoint(checkpoint);
                         player.sendMessage("Чекпоинт сохранен!");
+                        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f); // Воспроизводим звук
                         break;
                     }
                 }

@@ -103,11 +103,7 @@ public class ParkourCommand implements CommandExecutor {
         }
 
         Location blockLocation = player.getLocation().getBlock().getLocation();
-        if (blockLocation.getBlock().getType() != Material.STONE_PRESSURE_PLATE) {
-            player.sendMessage(ChatColor.RED + "Вы должны стоять на каменной нажимной плите!");
-            return;
-        }
-
+        blockLocation.getBlock().setType(Material.STONE_PRESSURE_PLATE); // Устанавливаем плиту
         map.setStart(blockLocation);
         plugin.saveMap(map);
         player.sendMessage(ChatColor.GREEN + "Стартовая точка установлена!");
@@ -133,11 +129,7 @@ public class ParkourCommand implements CommandExecutor {
         }
 
         Location blockLocation = player.getLocation().getBlock().getLocation();
-        if (blockLocation.getBlock().getType() != Material.STONE_PRESSURE_PLATE) {
-            player.sendMessage(ChatColor.RED + "Вы должны стоять на каменной нажимной плите!");
-            return;
-        }
-
+        blockLocation.getBlock().setType(Material.HEAVY_WEIGHTED_PRESSURE_PLATE); // Устанавливаем плиту
         map.addCheckpoint(blockLocation);
         plugin.saveMap(map);
         player.sendMessage(ChatColor.GREEN + "Чекпоинт добавлен!");
@@ -163,11 +155,7 @@ public class ParkourCommand implements CommandExecutor {
         }
 
         Location blockLocation = player.getLocation().getBlock().getLocation();
-        if (blockLocation.getBlock().getType() != Material.STONE_PRESSURE_PLATE) {
-            player.sendMessage(ChatColor.RED + "Вы должны стоять на каменной нажимной плите!");
-            return;
-        }
-
+        blockLocation.getBlock().setType(Material.LIGHT_WEIGHTED_PRESSURE_PLATE); // Устанавливаем плиту
         map.setFinish(blockLocation);
         plugin.saveMap(map);
         player.sendMessage(ChatColor.GREEN + "Финишная точка установлена!");
