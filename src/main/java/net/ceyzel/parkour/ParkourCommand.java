@@ -3,14 +3,11 @@ package net.ceyzel.parkour;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import net.ceyzel.parkour.CeyZelParkour;
-import net.ceyzel.parkour.ParkourMap;
-import net.ceyzel.parkour.ParkourSession;
 
 import java.util.*;
 
@@ -105,9 +102,9 @@ public class ParkourCommand implements CommandExecutor {
             return;
         }
 
-        Location blockLocation = player.getLocation().getBlock().getLocation();
-        blockLocation.getBlock().setType(Material.STONE_PRESSURE_PLATE); // Устанавливаем плиту
-        map.setStart(blockLocation);
+        Block block = player.getLocation().getBlock();
+        block.setType(Material.STONE_PRESSURE_PLATE); // Устанавливаем плиту
+        map.setStart(block);
         plugin.saveMap(map);
         player.sendMessage(ChatColor.GREEN + "Стартовая точка установлена!");
     }
@@ -131,9 +128,9 @@ public class ParkourCommand implements CommandExecutor {
             return;
         }
 
-        Location blockLocation = player.getLocation().getBlock().getLocation();
-        blockLocation.getBlock().setType(Material.HEAVY_WEIGHTED_PRESSURE_PLATE); // Устанавливаем плиту
-        map.addCheckpoint(blockLocation);
+        Block block = player.getLocation().getBlock();
+        block.setType(Material.HEAVY_WEIGHTED_PRESSURE_PLATE); // Устанавливаем плиту
+        map.addCheckpoint(block);
         plugin.saveMap(map);
         player.sendMessage(ChatColor.GREEN + "Чекпоинт добавлен!");
     }
@@ -157,9 +154,9 @@ public class ParkourCommand implements CommandExecutor {
             return;
         }
 
-        Location blockLocation = player.getLocation().getBlock().getLocation();
-        blockLocation.getBlock().setType(Material.LIGHT_WEIGHTED_PRESSURE_PLATE); // Устанавливаем плиту
-        map.setFinish(blockLocation);
+        Block block = player.getLocation().getBlock();
+        block.setType(Material.LIGHT_WEIGHTED_PRESSURE_PLATE); // Устанавливаем плиту
+        map.setFinish(block);
         plugin.saveMap(map);
         player.sendMessage(ChatColor.GREEN + "Финишная точка установлена!");
     }
@@ -246,7 +243,7 @@ public class ParkourCommand implements CommandExecutor {
             return;
         }
 
-        player.teleport(map.getStart());
+        player.teleport(map.getStart().getLocation());
         ParkourSession session = new ParkourSession(playerId, map.getName(), map.getStart());
         plugin.getActiveSessions().put(playerId, session);
         player.sendMessage(ChatColor.GREEN + "Вы зашли на карту");

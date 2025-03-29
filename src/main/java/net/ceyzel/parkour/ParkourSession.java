@@ -1,23 +1,23 @@
 package net.ceyzel.parkour;
 
-import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 
 public class ParkourSession {
     private UUID playerId;
     private long startTime;
-    private Location lastCheckpoint;
+    private Block lastCheckpoint;
     private String mapName;
 
-    public ParkourSession(UUID playerId, String mapName, Location start) {
+    public ParkourSession(UUID playerId, String mapName, Block start) {
         this.playerId = playerId;
         this.startTime = System.currentTimeMillis();
         this.mapName = mapName;
         this.lastCheckpoint = start; // Устанавливаем стартовую точку как первый чекпоинт
     }
 
-    public @NotNull Location getLastCheckpoint() {
+    public @NotNull Block getLastCheckpoint() {
         return lastCheckpoint;
     }
 
@@ -41,7 +41,7 @@ public class ParkourSession {
         return mapName;
     }
 
-    public void setLastCheckpoint(Location lastCheckpoint) {
+    public void setLastCheckpoint(Block lastCheckpoint) {
         this.lastCheckpoint = lastCheckpoint;
     }
 

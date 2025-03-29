@@ -1,23 +1,24 @@
 package net.ceyzel.parkour;
 
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ParkourMap {
     private final String name;
-    private Location start;
-    private Location finish;
+    private Block start;
+    private Block finish;
     private double score;
-    private List<Location> checkpoints;
+    private Set<Block> checkpoints;
 
     public ParkourMap(String name) {
         this.name = name;
-        this.checkpoints = new ArrayList<>();
+        this.checkpoints = new HashSet<>();
     }
 
-    public ParkourMap(String name, Location start, Location finish, double score, List<Location> checkpoints) {
+    public ParkourMap(String name, Block start, Block finish, double score, Set<Block> checkpoints) {
         this.name = name;
         this.start = start;
         this.finish = finish;
@@ -29,19 +30,19 @@ public class ParkourMap {
         return name;
     }
 
-    public Location getStart() {
+    public Block getStart() {
         return start;
     }
 
-    public void setStart(Location start) {
+    public void setStart(Block start) {
         this.start = start;
     }
 
-    public Location getFinish() {
+    public Block getFinish() {
         return finish;
     }
 
-    public void setFinish(Location finish) {
+    public void setFinish(Block finish) {
         this.finish = finish;
     }
 
@@ -53,18 +54,15 @@ public class ParkourMap {
         this.score = score;
     }
 
-    public List<Location> getCheckpoints() {
+    public Set<Block> getCheckpoints() {
         return checkpoints;
     }
 
-    public void setCheckpoints(List<Location> checkpoints) {
+    public void setCheckpoints(Set<Block> checkpoints) {
         this.checkpoints = checkpoints;
     }
 
-    public void addCheckpoint(Location blockLocation) {
-        if (checkpoints == null) {
-            checkpoints = new ArrayList<>();
-        }
-        checkpoints.add(blockLocation);
+    public void addCheckpoint(Block block) {
+        checkpoints.add(block);
     }
 }
