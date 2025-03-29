@@ -2,8 +2,8 @@
 - [x] Каменные плиты теперь сами ставятся
 - [x] /kill 
 - [ ] Placeholder
-- [ ] /ceyzel remove
-- [ ] /join
+- [x] /ceyzel remove
+- [x] /join
 - [x] Засчитывает время прохождение и какое по счету
 - [x] /mapinfo название Сложность, награда в поинтаъ, сколько раз пройдено и за сколько
 - [ ] /ceyzel setdifficult - удалить setscore. Сложность Easy - 2 point, Medium - 5 point, Hard - 10 point, Insane - 25 point
