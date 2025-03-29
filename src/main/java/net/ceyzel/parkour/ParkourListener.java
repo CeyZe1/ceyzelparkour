@@ -39,9 +39,14 @@ public class ParkourListener implements Listener {
             ParkourMap map = plugin.getMap(session.getMapName());
 
             if (map != null && map.getFinish() != null && map.getFinish().equals(event.getTo())) {
+                long time = (System.currentTimeMillis() - session.getStartTime()) / 1000;
                 plugin.addPlayerScore(player.getUniqueId(), map.getScore());
-                player.sendMessage("Карта пройдена, вы получаете " + map.getScore() + " поинтов");
+                plugin.addMapCompletion(player.getUniqueId(), map.getName(), time);
+                player.sendMessage("Карта пройдена, вы получаете " + map.getScore() + " поинтов. Время: " + time + " сек.");
                 plugin.getActiveSessions().remove(player.getUniqueId());
+                if (plugin.lobby_location != null) {
+                    player.teleport(plugin.lobby_location);
+                }
             }
 
             // Если игрок наступил на чекпоинт

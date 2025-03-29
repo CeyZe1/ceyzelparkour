@@ -47,6 +47,9 @@ public class ParkourCommand implements CommandExecutor {
             case "join":
                 handleJoinCommand(sender, args);
                 break;
+            case "info":
+                handleInfoCommand(sender, args);
+                break;
             default:
                 sendHelp(sender);
                 break;
@@ -184,6 +187,36 @@ public class ParkourCommand implements CommandExecutor {
         }
     }
 
+    private void handleInfoCommand(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(ChatColor.RED + "Только игроки могут использовать эту команду!");
+            return;
+        }
+
+        Player player = (Player) sender;
+        if (args.length < 2) {
+            player.sendMessage(ChatColor.RED + "Используйте: /ceyzel info <название>");
+            return;
+        }
+
+        ParkourMap map = plugin.getParkourMaps().get(args[1]);
+        if (map == null) {
+            player.sendMessage(ChatColor.RED + "Карта не найдена!");
+            return;
+        }
+
+        UUID playerId = player.getUniqueId();
+        double totalScore = plugin.getPlayerTotalScore(playerId);
+        int completions = plugin.getMapCompletions(playerId, map.getName());
+        long bestTime = plugin.getBestTime(playerId, map.getName());
+
+        player.sendMessage(ChatColor.GOLD + "Информация о карте '" + map.getName() + "':");
+        player.sendMessage(ChatColor.YELLOW + "Награда: " + map.getScore() + " очков");
+        player.sendMessage(ChatColor.YELLOW + "Ваш общий счет: " + totalScore + " очков");
+        player.sendMessage(ChatColor.YELLOW + "Количество прохождений: " + completions);
+        player.sendMessage(ChatColor.YELLOW + "Лучшее время: " + (bestTime == Long.MAX_VALUE ? "Нет данных" : bestTime + " сек"));
+    }
+
     private void handleJoinCommand(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "Только игроки могут использовать эту команду!");
@@ -218,8 +251,6 @@ public class ParkourCommand implements CommandExecutor {
         plugin.getActiveSessions().put(playerId, session);
         player.sendMessage(ChatColor.GREEN + "Вы зашли на карту");
     }
-
-
 
     private boolean checkPermission(CommandSender sender, String permission) {
         if (!sender.hasPermission(permission)) {

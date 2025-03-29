@@ -18,6 +18,8 @@ public class CeyZelParkour extends JavaPlugin {
     private FileConfiguration config;
     private Map<UUID, ParkourSession> activeSessions = new HashMap<>();
     private Map<String, ParkourMap> parkourMaps = new HashMap<>();
+    private Map<UUID, Map<String, Integer>> playerMapCompletions = new HashMap<>();
+    private Map<UUID, Map<String, Long>> playerBestTimes = new HashMap<>();
 
     public Location lobby_location;
 
@@ -200,5 +202,18 @@ public class CeyZelParkour extends JavaPlugin {
 
     public void setParkourMaps(Map<String, ParkourMap> parkourMaps) {
         this.parkourMaps = parkourMaps;
+    }
+
+    public void addMapCompletion(UUID playerId, String mapName, long time) {
+        playerMapCompletions.computeIfAbsent(playerId, k -> new HashMap<>()).merge(mapName, 1, Integer::sum);
+        playerBestTimes.computeIfAbsent(playerId, k -> new HashMap<>()).merge(mapName, time, (oldTime, newTime) -> Math.min(oldTime, newTime));
+    }
+
+    public int getMapCompletions(UUID playerId, String mapName) {
+        return playerMapCompletions.getOrDefault(playerId, new HashMap<>()).getOrDefault(mapName, 0);
+    }
+
+    public long getBestTime(UUID playerId, String mapName) {
+        return playerBestTimes.getOrDefault(playerId, new HashMap<>()).getOrDefault(mapName, Long.MAX_VALUE);
     }
 }
