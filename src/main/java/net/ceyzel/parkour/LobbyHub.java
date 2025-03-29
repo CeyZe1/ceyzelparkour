@@ -8,6 +8,7 @@ import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class LobbyHub {
@@ -25,7 +26,8 @@ public class LobbyHub {
             reg.register("hub", lobby);
             reg.register("lobby", lobby);
             reg.register("kill", ((commandSourceStack, args) -> {
-                if (commandSourceStack.getExecutor() instanceof Player executor){
+                if (commandSourceStack.getExecutor() instanceof Player executor &&
+                        executor.getWorld().equals(Bukkit.getWorld("maps"))) {
                     executor.setHealth(0);
                 }
             }));
