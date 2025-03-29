@@ -46,8 +46,8 @@ public class ParkourCommand implements CommandExecutor {
             case "join":
                 handleJoinCommand(sender, args);
                 break;
-            case "info":
-                handleInfoCommand(sender, args);
+            case "remove":
+                handleRemoveCommand(sender, args);
                 break;
             default:
                 sendHelp(sender);
@@ -63,7 +63,9 @@ public class ParkourCommand implements CommandExecutor {
         sender.sendMessage(ChatColor.YELLOW + "/ceyzel setcheckpoint <название> " + ChatColor.GRAY + "- Добавить чекпоинт");
         sender.sendMessage(ChatColor.YELLOW + "/ceyzel setfinish <название> " + ChatColor.GRAY + "- Установить финиш");
         sender.sendMessage(ChatColor.YELLOW + "/ceyzel setscore <название> <очки> " + ChatColor.GRAY + "- Назначить награду");
-        sender.sendMessage(ChatColor.YELLOW + "/ceyzel join <название> [игрок] " + ChatColor.GRAY + "- Начать паркур");
+        sender.sendMessage(ChatColor.YELLOW + "/join <название> " + ChatColor.GRAY + "- Начать паркур");
+        sender.sendMessage(ChatColor.YELLOW + "/ceyzel mapinfo <название> " + ChatColor.GRAY + "- Информация о карте");
+        sender.sendMessage(ChatColor.YELLOW + "/ceyzel remove <название> " + ChatColor.GRAY + "- Удалить карту");
     }
 
     private void handleCreateCommand(CommandSender sender, String[] args) {
@@ -83,6 +85,42 @@ public class ParkourCommand implements CommandExecutor {
         plugin.getParkourMaps().put(mapName, newMap);
         plugin.saveMap(newMap);
         sender.sendMessage(ChatColor.GREEN + "Карта '" + mapName + "' создана!");
+    }
+
+    private void handleJoinCommand(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(ChatColor.RED + "Только игроки могут использовать эту команду!");
+            return;
+        }
+        if (!checkPermission(sender, "ceyzelparkour.join")) return;
+
+        Player player = (Player) sender;
+        if (args.length < 1) {
+            player.sendMessage(ChatColor.RED + "Используйте: /join <название>");
+            return;
+        }
+
+        ParkourMap map = plugin.getParkourMaps().get(args[0]);
+        if (map == null) {
+            player.sendMessage(ChatColor.RED + "Карта не найдена!");
+            return;
+        }
+
+        if (map.getStart() == null) {
+            player.sendMessage(ChatColor.RED + "Стартовая точка не установлена!");
+            return;
+        }
+
+        UUID playerId = player.getUniqueId();
+        if (plugin.getActiveSessions().containsKey(playerId)) {
+            player.sendMessage(ChatColor.RED + "Вы уже на карте");
+            return;
+        }
+
+        player.teleport(map.getStart().getLocation());
+        ParkourSession session = new ParkourSession(playerId, map.getName(), map.getStart());
+        plugin.getActiveSessions().put(playerId, session);
+        player.sendMessage(ChatColor.GREEN + "Вы зашли на карту");
     }
 
     private void handleSetStartCommand(CommandSender sender, String[] args) {
@@ -186,7 +224,7 @@ public class ParkourCommand implements CommandExecutor {
         }
     }
 
-    private void handleInfoCommand(CommandSender sender, String[] args) {
+    private void handleMapInfoCommand(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "Только игроки могут использовать эту команду!");
             return;
@@ -194,7 +232,7 @@ public class ParkourCommand implements CommandExecutor {
 
         Player player = (Player) sender;
         if (args.length < 2) {
-            player.sendMessage(ChatColor.RED + "Используйте: /ceyzel info <название>");
+            player.sendMessage(ChatColor.RED + "Используйте: /ceyzel mapinfo <название>");
             return;
         }
 
@@ -216,49 +254,30 @@ public class ParkourCommand implements CommandExecutor {
         player.sendMessage(ChatColor.YELLOW + "Лучшее время: " + (bestTime == Long.MAX_VALUE ? "Нет данных" : bestTime + " сек"));
     }
 
-    private void handleJoinCommand(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "Только игроки могут использовать эту команду!");
-            return;
-        }
-
-        Player player = (Player) sender;
-        if (args.length < 2) {
-            player.sendMessage(ChatColor.RED + "Используйте: /ceyzel join <название>");
-            return;
-        }
-
-        ParkourMap map = plugin.getParkourMaps().get(args[1]);
-        if (map == null) {
-            player.sendMessage(ChatColor.RED + "Карта не найдена!");
-            return;
-        }
-
-        if (map.getStart() == null) {
-            player.sendMessage(ChatColor.RED + "Стартовая точка не установлена!");
-            return;
-        }
-
-        UUID playerId = player.getUniqueId();
-        if (plugin.getActiveSessions().containsKey(playerId)) {
-            player.sendMessage(ChatColor.RED + "Вы уже на карте");
-            return;
-        }
-
-        player.teleport(map.getStart().getLocation());
-        var key = new NamespacedKey(plugin, "current_checkpoint");
-        var playerPDC = player.getPersistentDataContainer();
-        playerPDC.set(key, PersistentDataType.INTEGER, 0);
-        ParkourSession session = new ParkourSession(playerId, map.getName(), map.getStart());
-        plugin.getActiveSessions().put(playerId, session);
-        player.sendMessage(ChatColor.GREEN + "Вы зашли на карту");
-    }
-
     private boolean checkPermission(CommandSender sender, String permission) {
         if (!sender.hasPermission(permission)) {
             sender.sendMessage(ChatColor.RED + "Недостаточно прав!");
             return false;
         }
         return true;
+    }
+
+    private void handleRemoveCommand(CommandSender sender, String[] args) {
+        if (!checkPermission(sender, "ceyzelparkour.admin")) return;
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.RED + "Используйте: /ceyzel remove <название>");
+            return;
+        }
+
+        String mapName = args[1];
+        if (!plugin.getParkourMaps().containsKey(mapName)) {
+            sender.sendMessage(ChatColor.RED + "Карта с таким названием не найдена!");
+            return;
+        }
+
+        plugin.getParkourMaps().remove(mapName);
+        plugin.getConfig().set(mapName, null); // Удаляем карту из конфига
+        plugin.saveConfig();
+        sender.sendMessage(ChatColor.GREEN + "Карта '" + mapName + "' удалена!");
     }
 }

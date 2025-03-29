@@ -20,3 +20,11 @@ commands:
     description: залупа
     usage: /kill
     permission: ceyzelparkour.kill
+  join:
+    description: рукоблуд
+    usage: /join <название>
+    permission: ceyzelparkour.join
+  mapinfo:
+    description: ссанина
+    usage: /mapinfo <название>
+    permission: ceyzelparkour.mapinfo

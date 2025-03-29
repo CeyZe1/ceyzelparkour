@@ -32,7 +32,25 @@ public class CeyZelParkour extends JavaPlugin {
         this.config = getConfig();
         loadMaps();
         loadLocationsFromConfig();
-        getCommand("ceyzel").setExecutor(new ParkourCommand(this));
+
+        if (getCommand("ceyzel") != null) {
+            getCommand("ceyzel").setExecutor(new ParkourCommand(this));
+        } else {
+            getLogger().severe("Команда 'ceyzel' не найдена в plugin.yml!");
+        }
+
+        if (getCommand("mapinfo") != null) {
+            getCommand("mapinfo").setExecutor(new MapInfoCommand(this));
+        } else {
+            getLogger().severe("Команда 'mapinfo' не найдена в plugin.yml!");
+        }
+
+        if (getCommand("join") != null) {
+            getCommand("join").setExecutor(new ParkourCommand(this));
+        } else {
+            getLogger().severe("Команда 'join' не найдена в plugin.yml!");
+        }
+
         Bukkit.getPluginManager().registerEvents(new ParkourListener(this), this);
         Bukkit.getScheduler().runTaskTimer(this, this::updateActionBars, 0L, 20L);
         LobbyHub.RegisterCommands(this);
