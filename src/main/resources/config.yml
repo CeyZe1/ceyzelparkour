@@ -1,5 +1,5 @@
 lobby_location:
-- ==: org.bukkit.Location
+  ==: org.bukkit.Location
   world: world
   x: 0.0
   y: 0.0
