@@ -12,3 +12,7 @@ commands:
     description: писька
     usage: /ceyzel <subcommand>
     permission: ceyzelparkour.use
+  lobby:
+    description: жопа
+    usage: /lobby
+    permission: ceyzelparkour.lobby
