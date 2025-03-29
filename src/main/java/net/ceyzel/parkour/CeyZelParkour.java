@@ -13,6 +13,7 @@ import org.bukkit.util.NumberConversions;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CeyZelParkour extends JavaPlugin {
     private Map<UUID, Double> playerScores = new HashMap<>();
@@ -101,16 +102,9 @@ public class CeyZelParkour extends JavaPlugin {
                 Block finish = config.getLocation(mapName + ".finish").getBlock();
                 double score = config.getDouble(mapName + ".score");
                 List<Location> checkpointLocations = (List<Location>) config.getList(mapName + ".checkpoints");
-                Set<Block> checkpoints = new HashSet<>();
-
-                if (checkpointLocations != null) {
-                    for (Location loc : checkpointLocations) {
-                        checkpoints.add(loc.getBlock());
-                    }
-                }
 
                 if (start != null && finish != null) {
-                    ParkourMap map = new ParkourMap(mapName, start, finish, score, checkpoints);
+                    ParkourMap map = new ParkourMap(mapName, start, finish, score, checkpointLocations.stream().map(Location::getBlock).collect(Collectors.toUnmodifiableList()));
                     this.parkourMaps.put(mapName, map);
                 } else {
                     getLogger().warning("Не удалось загрузить карту " + mapName + ": стартовая или конечная точка не найдены.");

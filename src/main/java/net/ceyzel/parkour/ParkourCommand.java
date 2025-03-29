@@ -3,11 +3,13 @@ package net.ceyzel.parkour;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
 
@@ -244,6 +246,9 @@ public class ParkourCommand implements CommandExecutor {
         }
 
         player.teleport(map.getStart().getLocation());
+        var key = new NamespacedKey(plugin, "current_checkpoint");
+        var playerPDC = player.getPersistentDataContainer();
+        playerPDC.set(key, PersistentDataType.INTEGER, 0);
         ParkourSession session = new ParkourSession(playerId, map.getName(), map.getStart());
         plugin.getActiveSessions().put(playerId, session);
         player.sendMessage(ChatColor.GREEN + "Вы зашли на карту");

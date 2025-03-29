@@ -1,6 +1,7 @@
 package net.ceyzel.parkour;
 
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -8,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.persistence.PersistentDataType;
 
 public class ParkourListener implements Listener {
     private final CeyZelParkour plugin;
@@ -54,6 +56,12 @@ public class ParkourListener implements Listener {
 
                 // Проверка на чекпоинт
                 if (map.getCheckpoints() != null && map.getCheckpoints().contains(toBlock)) {
+                    var steppedOn = map.getCheckpoints().indexOf(toBlock);
+                    var key = new NamespacedKey(plugin, "current_checkpoint");
+                    var playerPDC = player.getPersistentDataContainer();
+                    var current = playerPDC.get(key, PersistentDataType.INTEGER);
+                    if (current == null || steppedOn != current) return;
+                    playerPDC.set(key, PersistentDataType.INTEGER, current + 1);
                     session.setLastCheckpoint(toBlock);
                     player.sendMessage("Чекпоинт сохранен!");
                     player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);

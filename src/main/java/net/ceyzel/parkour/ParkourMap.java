@@ -3,7 +3,9 @@ package net.ceyzel.parkour;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ParkourMap {
@@ -11,14 +13,14 @@ public class ParkourMap {
     private Block start;
     private Block finish;
     private double score;
-    private Set<Block> checkpoints;
+    private List<Block> checkpoints;
 
     public ParkourMap(String name) {
         this.name = name;
-        this.checkpoints = new HashSet<>();
+        this.checkpoints = new ArrayList<>();
     }
 
-    public ParkourMap(String name, Block start, Block finish, double score, Set<Block> checkpoints) {
+    public ParkourMap(String name, Block start, Block finish, double score, List<Block> checkpoints) {
         this.name = name;
         this.start = start;
         this.finish = finish;
@@ -54,11 +56,11 @@ public class ParkourMap {
         this.score = score;
     }
 
-    public Set<Block> getCheckpoints() {
+    public List<Block> getCheckpoints() {
         return checkpoints;
     }
 
-    public void setCheckpoints(Set<Block> checkpoints) {
+    public void setCheckpoints(List<Block> checkpoints) {
         this.checkpoints = checkpoints;
     }
 
