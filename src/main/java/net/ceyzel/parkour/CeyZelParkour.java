@@ -36,21 +36,13 @@ public class CeyZelParkour extends JavaPlugin {
         loadMaps();
         loadLocationsFromConfig();
 
-        if (getCommand("ceyzel") != null) {
-            getCommand("ceyzel").setExecutor(new ParkourCommand(this));
-        } else {
-            getLogger().severe("Команда 'ceyzel' не найдена в plugin.yml!");
-        }
-
-        if (getCommand("mapinfo") != null) {
-            getCommand("mapinfo").setExecutor(new MapInfoCommand(this));
-        } else {
-            getLogger().severe("Команда 'mapinfo' не найдена в plugin.yml!");
-        }
-
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
+            var cmd = new ParkourCommand(this);
+            var info = new MapInfoCommand(this);
             var reg = commands.registrar();
-            reg.register(ParkourCommand.coolJoinCommand(this));
+            reg.register(cmd.coolJoinCommand());
+            reg.register(cmd.coolCeyzelCommand());
+            reg.register(info.asNode());
         });
 
         Bukkit.getPluginManager().registerEvents(new ParkourListener(this), this);
@@ -124,7 +116,10 @@ public class CeyZelParkour extends JavaPlugin {
                 List<Location> checkpointLocations = (List<Location>) config.getList(mapName + ".checkpoints");
 
                 if (start != null && finish != null) {
-                    ParkourMap map = new ParkourMap(mapName, start, finish, score, checkpointLocations.stream().map(Location::getBlock).collect(Collectors.toUnmodifiableList()));
+                    ParkourMap map = new ParkourMap(mapName, start, finish, score, checkpointLocations.stream()
+                            .map(Location::getBlock)
+                            .toList()
+                    );
                     this.parkourMaps.put(mapName, map);
                 } else {
                     getLogger().warning("Не удалось загрузить карту " + mapName + ": стартовая или конечная точка не найдены.");
