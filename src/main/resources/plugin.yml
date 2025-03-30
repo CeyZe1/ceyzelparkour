@@ -1,6 +1,6 @@
 name: CeyZelParkour
 version: 1.1
-author: CeyZe1
+author: "CeyZe1, Hagarashi8"
 main: net.ceyzel.parkour.CeyZelParkour
 api-version: 1.21
 permissions:
