@@ -18,23 +18,22 @@ public class ScoreExpansion extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getAuthor() {
-        return "YourName";
+        return "CeyZe1, Hagarashi8";
     }
 
     @Override
     public @NotNull String getVersion() {
-        return "1.0.0";
+        return "1.1";
     }
 
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String params) {
         if (player == null) {
-            return null;
+            return "";
         }
         if (params.equalsIgnoreCase("player_score_maps")) {
             return String.valueOf(plugin.getPlayerTotalScore(player.getUniqueId()));
         }
-        return null;
+        return "";
     }
-
 }

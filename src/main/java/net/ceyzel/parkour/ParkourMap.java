@@ -10,7 +10,7 @@ public class ParkourMap {
     private Block start;
     private Block finish;
     private double score;
-    private List<Block> checkpoints;
+    private final List<Block> checkpoints;
 
     public ParkourMap(String name) {
         this.name = name;
@@ -55,10 +55,6 @@ public class ParkourMap {
 
     public List<Block> getCheckpoints() {
         return checkpoints;
-    }
-
-    public void setCheckpoints(List<Block> checkpoints) {
-        this.checkpoints = checkpoints;
     }
 
     public void addCheckpoint(Block block) {

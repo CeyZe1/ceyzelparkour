@@ -2,15 +2,19 @@ package net.ceyzel.parkour;
 
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class LobbyHub {
-    public static void RegisterCommands(CeyZelParkour plugin) {
+    public static void registerCommands(CeyZelParkour plugin) {
         BasicCommand lobby = (commandSourceStack, strings) -> {
-            if (plugin.lobby_location != null) {  // Add null check
-                commandSourceStack.getExecutor().teleport(plugin.lobby_location);
-            } else {
-                commandSourceStack.getExecutor().sendMessage("Lobby location is not set!");
+            if (commandSourceStack.getExecutor() instanceof Player player) {
+                Location lobbyLocation = plugin.getLobbyLocation(); // Используем геттер
+                if (lobbyLocation != null) {
+                    player.teleport(lobbyLocation);
+                } else {
+                    player.sendMessage("Лобби локейшион не найдено!");
+                }
             }
         };
 
@@ -24,11 +28,10 @@ public class LobbyHub {
                     if (session != null) {
                         executor.teleport(session.getLastCheckpoint().getLocation());
                     } else {
-                        executor.sendMessage("Вы не на карте!");
+                        executor.sendMessage("Ты не на карте!");
                     }
                 }
             }));
         });
     }
 }
-

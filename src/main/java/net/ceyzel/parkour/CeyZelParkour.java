@@ -12,20 +12,18 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class CeyZelParkour extends JavaPlugin {
-    private Map<UUID, Double> playerScores = new HashMap<>();
-    private FileConfiguration config;
-    private Map<UUID, ParkourSession> activeSessions = new HashMap<>();
-    private Map<String, ParkourMap> parkourMaps = new HashMap<>();
-    private Map<UUID, Map<String, Integer>> playerMapCompletions = new HashMap<>();
-    private Map<UUID, Map<String, Long>> playerBestTimes = new HashMap<>();
+    private final Map<UUID, Double> playerScores = new HashMap<>();
+    private final Map<UUID, ParkourSession> activeSessions = new HashMap<>();
+    private final Map<String, ParkourMap> parkourMaps = new HashMap<>();
+    private final Map<UUID, Map<String, Integer>> playerMapCompletions = new HashMap<>();
+    private final Map<UUID, Map<String, Long>> playerBestTimes = new HashMap<>();
 
-    public Location lobby_location;
+    private Location lobbyLocation;
 
     @Override
     public void onEnable() {
         loadPlayerScores();
         saveDefaultConfig();
-        this.config = getConfig();
         loadMaps();
         loadLocationsFromConfig();
 
@@ -33,14 +31,14 @@ public class CeyZelParkour extends JavaPlugin {
             var cmd = new ParkourCommand(this);
             var info = new MapInfoCommand(this);
             var reg = commands.registrar();
-            reg.register(cmd.coolJoinCommand());
-            reg.register(cmd.coolCeyzelCommand());
+            reg.register(cmd.createJoinCommand());
+            reg.register(cmd.createCeyzelCommand());
             reg.register(info.asNode());
         });
 
         Bukkit.getPluginManager().registerEvents(new ParkourListener(this), this);
-        Bukkit.getScheduler().runTaskTimer(this, this::updateActionBars, 0L, 1L); // 1 тик = 50 мс
-        LobbyHub.RegisterCommands(this);
+        Bukkit.getScheduler().runTaskTimer(this, this::updateActionBars, 0L, 1L);
+        LobbyHub.registerCommands(this);
     }
 
     @Override
@@ -75,47 +73,46 @@ public class CeyZelParkour extends JavaPlugin {
     }
 
     private @Nullable Location locationByPath(String path) {
-        String worldName = config.getString(path + ".world");
+        String worldName = getConfig().getString(path + ".world");
         if (worldName != null && Bukkit.getWorld(worldName) != null) {
             return new Location(
                     Bukkit.getWorld(worldName),
-                    config.getDouble(path + ".x"),
-                    config.getDouble(path + ".y"),
-                    config.getDouble(path + ".z"),
-                    (float) config.getDouble(path + ".yaw"),
-                    (float) config.getDouble(path + ".pitch"));
+                    getConfig().getDouble(path + ".x"),
+                    getConfig().getDouble(path + ".y"),
+                    getConfig().getDouble(path + ".z"),
+                    (float) getConfig().getDouble(path + ".yaw"),
+                    (float) getConfig().getDouble(path + ".pitch"));
         }
-        this.getLogger().warning(String.format("%s не является валидной локацией", path));
+        this.getLogger().warning(String.format("%s неправильное значение", path));
         return null;
     }
 
     private void loadLocationsFromConfig() {
-        if (config.contains("lobby_location")) {
-            this.lobby_location = config.getLocation("lobby_location");
-            if (this.lobby_location == null) {
-                getLogger().warning("lobby_location не является валидной локацией.");
+        if (getConfig().contains("lobby_location")) {
+            this.lobbyLocation = getConfig().getLocation("lobby_location");
+            if (this.lobbyLocation == null) {
+                getLogger().warning("lobby_location не валиден");
             }
         } else {
-            getLogger().warning("lobby_location не найден в конфиге. Установите значение в конфиге.");
+            getLogger().warning("lobby_location не найден");
         }
     }
 
     public void loadMaps() {
-        for (String mapName : config.getKeys(false)) {
-            if (config.contains(mapName + ".start") && config.contains(mapName + ".finish")) {
-                Block start = config.getLocation(mapName + ".start").getBlock();
-                Block finish = config.getLocation(mapName + ".finish").getBlock();
-                double score = config.getDouble(mapName + ".score");
-                List<Location> checkpointLocations = (List<Location>) config.getList(mapName + ".checkpoints");
+        for (String mapName : getConfig().getKeys(false)) {
+            if (getConfig().contains(mapName + ".start") && getConfig().contains(mapName + ".finish")) {
+                Block start = getConfig().getLocation(mapName + ".start").getBlock();
+                Block finish = getConfig().getLocation(mapName + ".finish").getBlock();
+                double score = getConfig().getDouble(mapName + ".score");
+                List<Location> checkpointLocations = (List<Location>) getConfig().getList(mapName + ".checkpoints");
 
                 if (start != null && finish != null) {
-                    ParkourMap map = new ParkourMap(mapName, start, finish, score, checkpointLocations.stream()
+                    ParkourMap map = new ParkourMap(mapName, start, finish, score, checkpointLocations != null ? checkpointLocations.stream()
                             .map(Location::getBlock)
-                            .toList()
-                    );
+                            .toList() : new ArrayList<>());
                     this.parkourMaps.put(mapName, map);
                 } else {
-                    getLogger().warning("Не удалось загрузить карту " + mapName + ": стартовая или конечная точка не найдены.");
+                    getLogger().warning("Карта " + mapName + ": стартовая/финишная точка не найдена");
                 }
             }
         }
@@ -127,18 +124,18 @@ public class CeyZelParkour extends JavaPlugin {
             return;
         }
         if (map.getStart() != null) {
-            config.set(map.getName() + ".start", map.getStart().getLocation());
+            getConfig().set(map.getName() + ".start", map.getStart().getLocation());
         }
         if (map.getFinish() != null) {
-            config.set(map.getName() + ".finish", map.getFinish().getLocation());
+            getConfig().set(map.getName() + ".finish", map.getFinish().getLocation());
         }
-        config.set(map.getName() + ".score", map.getScore());
+        getConfig().set(map.getName() + ".score", map.getScore());
 
         List<Location> checkpointLocations = new ArrayList<>();
         for (Block checkpoint : map.getCheckpoints()) {
             checkpointLocations.add(checkpoint.getLocation());
         }
-        config.set(map.getName() + ".checkpoints", checkpointLocations);
+        getConfig().set(map.getName() + ".checkpoints", checkpointLocations);
 
         saveConfig();
     }
@@ -185,5 +182,9 @@ public class CeyZelParkour extends JavaPlugin {
 
     public long getBestTime(UUID playerId, String mapName) {
         return playerBestTimes.getOrDefault(playerId, new HashMap<>()).getOrDefault(mapName, Long.MAX_VALUE);
+    }
+
+    public Location getLobbyLocation() {
+        return lobbyLocation;
     }
 }

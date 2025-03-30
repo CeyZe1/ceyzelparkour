@@ -1,6 +1,7 @@
 package net.ceyzel.parkour;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -8,14 +9,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 public class ParkourListener implements Listener {
     private final CeyZelParkour plugin;
-    private final Set<UUID> checkpointedPlayers = new HashSet<>();
+    private final Set checkpointedPlayers = new HashSet<>();
 
     public ParkourListener(CeyZelParkour plugin) {
         this.plugin = plugin;
@@ -44,22 +44,20 @@ public class ParkourListener implements Listener {
             ParkourMap map = plugin.getMap(session.getMapName());
 
             if (map != null) {
-                // Проверка на финиш
                 if (map.getFinish() != null && map.getFinish().equals(toBlock)) {
                     long time = (System.currentTimeMillis() - session.getStartTime());
                     plugin.addPlayerScore(player.getUniqueId(), map.getScore());
-                    // TODO: Убрать кринж (time/1000)
                     plugin.addMapCompletion(player.getUniqueId(), map.getName(), time / 1000);
                     player.sendMessage("Карта пройдена, вы получаете " + map.getScore() + " поинтов. Время: " + plugin.formatTime(time));
                     plugin.getActiveSessions().remove(player.getUniqueId());
                     checkpointedPlayers.remove(player.getUniqueId()); // Очищаем чекпоинт для игрока
-                    if (plugin.lobby_location != null) {
-                        player.teleport(plugin.lobby_location);
+                    Location lobbyLocation = plugin.getLobbyLocation();
+                    if (lobbyLocation != null) {
+                        player.teleport(lobbyLocation);
                     }
                     return;
                 }
 
-                // Проверка на чекпоинт
                 if (map.getCheckpoints() != null && map.getCheckpoints().contains(toBlock)) {
                     if (!checkpointedPlayers.contains(player.getUniqueId())) {
                         session.setLastCheckpoint(toBlock);
