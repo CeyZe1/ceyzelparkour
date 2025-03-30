@@ -48,6 +48,7 @@ public class ParkourListener implements Listener {
                 if (map.getFinish() != null && map.getFinish().equals(toBlock)) {
                     long time = (System.currentTimeMillis() - session.getStartTime());
                     plugin.addPlayerScore(player.getUniqueId(), map.getScore());
+                    // TODO: Убрать кринж (time/1000)
                     plugin.addMapCompletion(player.getUniqueId(), map.getName(), time / 1000);
                     player.sendMessage("Карта пройдена, вы получаете " + map.getScore() + " поинтов. Время: " + plugin.formatTime(time));
                     plugin.getActiveSessions().remove(player.getUniqueId());

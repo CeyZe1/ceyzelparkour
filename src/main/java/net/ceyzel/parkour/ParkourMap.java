@@ -1,12 +1,9 @@
 package net.ceyzel.parkour;
 
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class ParkourMap {
     private final String name;
