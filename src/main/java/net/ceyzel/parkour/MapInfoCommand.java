@@ -46,7 +46,7 @@ public class MapInfoCommand { private final CeyZelParkour plugin;
                             long bestTime = plugin.getBestTime(playerId, map.getName());
 
                             player.sendMessage(ChatColor.GOLD + "Информация о карте '" + map.getName() + "':");
-                            player.sendMessage(ChatColor.YELLOW + "Пройдена: " + completions + "раз");
+                            player.sendMessage(ChatColor.YELLOW + "Пройдена: " + completions + " раз");
                             player.sendMessage(ChatColor.YELLOW + "Лучшее время: " + (bestTime == Long.MAX_VALUE ? "No data" : plugin.formatTime(bestTime * 1000)));
                             return 1;
                         })

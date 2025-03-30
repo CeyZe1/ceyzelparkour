@@ -50,7 +50,7 @@ public class ParkourListener implements Listener {
                     plugin.addMapCompletion(player.getUniqueId(), map.getName(), time / 1000);
                     player.sendMessage("Карта пройдена, вы получаете " + map.getScore() + " поинтов. Время: " + plugin.formatTime(time));
                     plugin.getActiveSessions().remove(player.getUniqueId());
-                    checkpointedPlayers.remove(player.getUniqueId()); // Очищаем чекпоинт для игрока
+                    checkpointedPlayers.remove(player.getUniqueId());
                     Location lobbyLocation = plugin.getLobbyLocation();
                     if (lobbyLocation != null) {
                         player.teleport(lobbyLocation);
