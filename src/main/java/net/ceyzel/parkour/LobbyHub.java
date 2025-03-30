@@ -26,11 +26,16 @@ public class LobbyHub {
             reg.register("hub", lobby);
             reg.register("lobby", lobby);
             reg.register("kill", ((commandSourceStack, args) -> {
-                if (commandSourceStack.getExecutor() instanceof Player executor &&
-                        executor.getWorld().equals(Bukkit.getWorld("maps"))) {
-                    executor.setHealth(0);
+                if (commandSourceStack.getExecutor() instanceof Player executor) {
+                    ParkourSession session = plugin.getActiveSessions().get(executor.getUniqueId());
+                    if (session != null) {
+                        executor.teleport(session.getLastCheckpoint().getLocation());
+                    } else {
+                        executor.sendMessage("Вы не на карте!");
+                    }
                 }
             }));
         });
     }
 }
+

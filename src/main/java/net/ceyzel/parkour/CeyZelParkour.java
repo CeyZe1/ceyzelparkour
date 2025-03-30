@@ -46,7 +46,7 @@ public class CeyZelParkour extends JavaPlugin {
         });
 
         Bukkit.getPluginManager().registerEvents(new ParkourListener(this), this);
-        Bukkit.getScheduler().runTaskTimer(this, this::updateActionBars, 0L, 20L);
+        Bukkit.getScheduler().runTaskTimer(this, this::updateActionBars, 0L, 1L); // 1 тик = 50 мс
         LobbyHub.RegisterCommands(this);
     }
 
@@ -133,10 +133,10 @@ public class CeyZelParkour extends JavaPlugin {
             getLogger().warning("null");
             return;
         }
-        if(map.getStart() != null) {
+        if (map.getStart() != null) {
             config.set(map.getName() + ".start", map.getStart().getLocation());
         }
-        if(map.getFinish() != null) {
+        if (map.getFinish() != null) {
             config.set(map.getName() + ".finish", map.getFinish().getLocation());
         }
         config.set(map.getName() + ".score", map.getScore());
@@ -166,14 +166,19 @@ public class CeyZelParkour extends JavaPlugin {
         for (ParkourSession session : activeSessions.values()) {
             Player player = Bukkit.getPlayer(session.getPlayerId());
             if (player != null) {
-                long time = (System.currentTimeMillis() - session.getStartTime()) / 1000;
-                player.sendActionBar("§aВремя: §e" + time + " сек");
+                long time = (System.currentTimeMillis() - session.getStartTime());
+                player.sendActionBar("§aВремя: §e" + formatTime(time));
             }
         }
     }
 
-    public Map<String, ParkourMap> getParkourMaps() {
-        return parkourMaps;
+    public String formatTime(long millis) {
+        long hours = millis / 3600000;
+        long minutes = (millis % 3600000) / 60000;
+        long seconds = (millis % 60000) / 1000;
+        long milliseconds = millis % 1000;
+
+        return String.format("%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds);
     }
 
     public void addMapCompletion(UUID playerId, String mapName, long time) {

@@ -1,7 +1,6 @@
 package net.ceyzel.parkour;
 
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -9,10 +8,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.persistence.PersistentDataType;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class ParkourListener implements Listener {
     private final CeyZelParkour plugin;
+    private final Set<UUID> checkpointedPlayers = new HashSet<>();
 
     public ParkourListener(CeyZelParkour plugin) {
         this.plugin = plugin;
@@ -43,11 +46,12 @@ public class ParkourListener implements Listener {
             if (map != null) {
                 // Проверка на финиш
                 if (map.getFinish() != null && map.getFinish().equals(toBlock)) {
-                    long time = (System.currentTimeMillis() - session.getStartTime()) / 1000;
+                    long time = (System.currentTimeMillis() - session.getStartTime());
                     plugin.addPlayerScore(player.getUniqueId(), map.getScore());
-                    plugin.addMapCompletion(player.getUniqueId(), map.getName(), time);
-                    player.sendMessage("Карта пройдена, вы получаете " + map.getScore() + " поинтов. Время: " + time + " сек.");
+                    plugin.addMapCompletion(player.getUniqueId(), map.getName(), time / 1000);
+                    player.sendMessage("Карта пройдена, вы получаете " + map.getScore() + " поинтов. Время: " + plugin.formatTime(time));
                     plugin.getActiveSessions().remove(player.getUniqueId());
+                    checkpointedPlayers.remove(player.getUniqueId()); // Очищаем чекпоинт для игрока
                     if (plugin.lobby_location != null) {
                         player.teleport(plugin.lobby_location);
                     }
@@ -56,15 +60,12 @@ public class ParkourListener implements Listener {
 
                 // Проверка на чекпоинт
                 if (map.getCheckpoints() != null && map.getCheckpoints().contains(toBlock)) {
-                    var steppedOn = map.getCheckpoints().indexOf(toBlock);
-                    var key = new NamespacedKey(plugin, "current_checkpoint");
-                    var playerPDC = player.getPersistentDataContainer();
-                    var current = playerPDC.get(key, PersistentDataType.INTEGER);
-                    if (current == null || steppedOn != current) return;
-                    playerPDC.set(key, PersistentDataType.INTEGER, current + 1);
-                    session.setLastCheckpoint(toBlock);
-                    player.sendMessage("Чекпоинт сохранен!");
-                    player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+                    if (!checkpointedPlayers.contains(player.getUniqueId())) {
+                        session.setLastCheckpoint(toBlock);
+                        player.sendMessage("Чекпоинт сохранен!");
+                        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+                        checkpointedPlayers.add(player.getUniqueId());
+                    }
                 }
             }
         }

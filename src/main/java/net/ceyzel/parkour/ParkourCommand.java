@@ -12,7 +12,6 @@ import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,7 +19,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.lang.invoke.SerializedLambda;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -32,8 +30,8 @@ public class ParkourCommand {
     }
 
     public CompletableFuture<Suggestions> mapsSuggestions(CommandContext<CommandSourceStack> ctx, SuggestionsBuilder builder) {
-        plugin.getParkourMaps().keySet().stream()
-                .filter(entry -> entry.startsWith(builder.getRemainingLowerCase()))
+        plugin.getMaps().keySet().stream()
+                .filter(entry -> entry.toLowerCase().startsWith(builder.getRemainingLowerCase()))
                 .forEach(builder::suggest);
         return builder.buildFuture();
     }
@@ -45,7 +43,7 @@ public class ParkourCommand {
                 .executes(ctx -> {
                     var sender = ctx.getSource().getSender();
                     sender.sendMessage(ChatColor.GOLD + "CeyzelParkour Commands:");
-                    sender.sendMessage(ChatColor.YELLOW + "/ceyzel create <название> " + ChatColor.GRAY + "- Создать карту");
+                    sender.sendMessage(ChatColor.YELLOW + "/ceyzel create <название> " + ChatColor.GRAY + "- Создать карта");
                     sender.sendMessage(ChatColor.YELLOW + "/ceyzel setstart <название> " + ChatColor.GRAY + "- Установить старт");
                     sender.sendMessage(ChatColor.YELLOW + "/ceyzel setcheckpoint <название> " + ChatColor.GRAY + "- Добавить чекпоинт");
                     sender.sendMessage(ChatColor.YELLOW + "/ceyzel setfinish <название> " + ChatColor.GRAY + "- Установить финиш");
@@ -71,14 +69,14 @@ public class ParkourCommand {
                     return 0;
                 })
                 .then(Commands.argument("map", StringArgumentType.string()).suggests((ctx, builder) -> {
-                    plugin.getParkourMaps().keySet()
+                    plugin.getMaps().keySet()
                             .stream()
                             .filter(entry -> entry.toLowerCase().startsWith(builder.getRemainingLowerCase()))
                             .forEach(builder::suggest);
                     return builder.buildFuture();
                 }).executes(ctx -> {
                             if (ctx.getSource().getSender() instanceof Player player) {
-                                ParkourMap map = plugin.getParkourMaps().get(ctx.getArgument("map", String.class));
+                                ParkourMap map = plugin.getMap(ctx.getArgument("map", String.class));
                                 if (map == null) {
                                     player.sendMessage(ChatColor.RED + "Карта не найдена!");
                                     return 0;
@@ -110,13 +108,13 @@ public class ParkourCommand {
         return Commands.literal("create")
                 .then(Commands.argument("map", StringArgumentType.string()).executes((ctx) -> {
                     var mapName = ctx.getArgument("map", String.class);
-                    if (plugin.getParkourMaps().containsKey(mapName)) {
+                    if (plugin.getMaps().containsKey(mapName)) {
                         ctx.getSource().getSender().sendMessage("Карта с таким названием уже существует");
                         return 0;
                     }
 
                     ParkourMap newMap = new ParkourMap(mapName);
-                    plugin.getParkourMaps().put(mapName, newMap);
+                    plugin.getMaps().put(mapName, newMap);
                     plugin.saveMap(newMap);
                     ctx.getSource().getSender().sendMessage(ChatColor.GREEN + "Карта '" + mapName + "' создана!");
 
@@ -135,14 +133,21 @@ public class ParkourCommand {
                                 return 0;
                             }
 
-                            ParkourMap map = plugin.getParkourMaps().get(mapname);
+                            ParkourMap map = plugin.getMap(mapname);
                             if (map == null) {
                                 player.sendMessage(ChatColor.RED + "Карта не найдена!");
                                 return 0;
                             }
 
-                            Block block = player.getLocation().getBlock();
-                            block.setType(Material.STONE_PRESSURE_PLATE); // Устанавливаем плиту
+                            Location location = player.getLocation();
+                            location.setX(Math.round(location.getX() * 10) / 10.0);
+                            location.setY(Math.round(location.getY() * 10) / 10.0);
+                            location.setZ(Math.round(location.getZ() * 10) / 10.0);
+                            location.setYaw((float) (Math.round(location.getYaw() * 10) / 10.0));
+                            location.setPitch((float) (Math.round(location.getPitch() * 10) / 10.0));
+
+                            Block block = location.getBlock();
+                            block.setType(Material.STONE_PRESSURE_PLATE);
                             map.setStart(block);
                             plugin.saveMap(map);
                             player.sendMessage(ChatColor.GREEN + "Стартовая точка установлена!");
@@ -156,21 +161,28 @@ public class ParkourCommand {
         return Commands.literal("setcheckpoint").then(
                 Commands.argument("map", StringArgumentType.string())
                         .suggests(this::mapsSuggestions)
-                        .executes(ctx->{
+                        .executes(ctx -> {
                             var mapname = ctx.getArgument("map", String.class);
                             if (!(ctx.getSource().getSender() instanceof Player player)) {
                                 ctx.getSource().getSender().sendMessage(ChatColor.RED + "Только игроки могут использовать эту команду!");
                                 return 0;
                             }
 
-                            ParkourMap map = plugin.getParkourMaps().get(mapname);
+                            ParkourMap map = plugin.getMap(mapname);
                             if (map == null) {
                                 player.sendMessage(ChatColor.RED + "Карта не найдена!");
                                 return 0;
                             }
 
-                            Block block = player.getLocation().getBlock();
-                            block.setType(Material.HEAVY_WEIGHTED_PRESSURE_PLATE); // Устанавливаем плиту
+                            Location location = player.getLocation();
+                            location.setX(Math.round(location.getX() * 10) / 10.0);
+                            location.setY(Math.round(location.getY() * 10) / 10.0);
+                            location.setZ(Math.round(location.getZ() * 10) / 10.0);
+                            location.setYaw((float) (Math.round(location.getYaw() * 10) / 10.0));
+                            location.setPitch((float) (Math.round(location.getPitch() * 10) / 10.0));
+
+                            Block block = location.getBlock();
+                            block.setType(Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
                             map.addCheckpoint(block);
                             plugin.saveMap(map);
                             player.sendMessage(ChatColor.GREEN + "Чекпоинт добавлен!");
@@ -184,21 +196,21 @@ public class ParkourCommand {
         return Commands.literal("setfinish").then(
                 Commands.argument("map", StringArgumentType.string())
                         .suggests(this::mapsSuggestions)
-                        .executes(ctx->{
+                        .executes(ctx -> {
                             var mapname = ctx.getArgument("map", String.class);
                             if (!(ctx.getSource().getSender() instanceof Player player)) {
                                 ctx.getSource().getSender().sendMessage(ChatColor.RED + "Только игроки могут использовать эту команду!");
                                 return 0;
                             }
 
-                            ParkourMap map = plugin.getParkourMaps().get(mapname);
+                            ParkourMap map = plugin.getMap(mapname);
                             if (map == null) {
                                 player.sendMessage(ChatColor.RED + "Карта не найдена!");
                                 return 0;
                             }
 
                             Block block = player.getLocation().getBlock();
-                            block.setType(Material.LIGHT_WEIGHTED_PRESSURE_PLATE); // Устанавливаем плиту
+                            block.setType(Material.LIGHT_WEIGHTED_PRESSURE_PLATE);
                             map.setFinish(block);
                             plugin.saveMap(map);
                             player.sendMessage(ChatColor.GREEN + "Финишная точка установлена!");
@@ -212,22 +224,21 @@ public class ParkourCommand {
         return Commands.literal("remove")
                 .then(Commands.argument("map", StringArgumentType.string())
                         .suggests(this::mapsSuggestions)
-                .executes(ctx -> {
+                        .executes(ctx -> {
+                            var mapName = ctx.getArgument("map", String.class);
+                            ParkourMap map = plugin.getMap(mapName);
+                            if (map == null) {
+                                ctx.getSource().getSender().sendMessage(ChatColor.RED + "Карта не найдена!");
+                                return 0;
+                            }
 
-                    var mapName = ctx.getArgument("map", String.class);
-                    ParkourMap map = plugin.getParkourMaps().get(mapName);
-                    if (map == null) {
-                        ctx.getSource().getSender().sendMessage(ChatColor.RED + "Карта не найдена!");
-                        return 0;
-                    }
+                            plugin.getMaps().remove(mapName);
+                            plugin.getConfig().set(mapName, null);
+                            plugin.saveConfig();
+                            ctx.getSource().getSender().sendMessage(ChatColor.GREEN + "Карта '" + mapName + "' удалена!");
 
-                    plugin.getParkourMaps().remove(mapName);
-                    plugin.getConfig().set(mapName, null); // Удаляем карту из конфига
-                    plugin.saveConfig();
-                    ctx.getSource().getSender().sendMessage(ChatColor.GREEN + "Карта '" + mapName + "' удалена!");
-
-                    return 1;
-                }))
+                            return 1;
+                        }))
                 .build();
     }
 }

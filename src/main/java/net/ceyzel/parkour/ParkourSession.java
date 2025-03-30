@@ -9,12 +9,14 @@ public class ParkourSession {
     private long startTime;
     private Block lastCheckpoint;
     private String mapName;
+    private int ticks; // Добавляем счетчик тиков
 
     public ParkourSession(UUID playerId, String mapName, Block start) {
         this.playerId = playerId;
         this.startTime = System.currentTimeMillis();
         this.mapName = mapName;
-        this.lastCheckpoint = start; // Устанавливаем стартовую точку как первый чекпоинт
+        this.lastCheckpoint = start;
+        this.ticks = 0; // Инициализируем счетчик тиков
     }
 
     public @NotNull Block getLastCheckpoint() {
@@ -47,5 +49,13 @@ public class ParkourSession {
 
     public void setMapName(String mapName) {
         this.mapName = mapName;
+    }
+
+    public int getTicks() {
+        return ticks;
+    }
+
+    public void incrementTicks() {
+        this.ticks++;
     }
 }
