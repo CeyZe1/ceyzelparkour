@@ -81,7 +81,11 @@ public class ParkourCommand {
                                     return 0;
                                 }
 
-                                player.teleport(map.getStart().getLocation());
+                                Location startLocation = map.getStart().getLocation();
+                                startLocation.setYaw(map.getStart().getLocation().getYaw()); // Применяем yaw
+                                startLocation.setPitch(map.getStart().getLocation().getPitch()); // Применяем pitch
+                                player.teleport(startLocation);
+
                                 ParkourSession session = new ParkourSession(playerId, map.getName(), map.getStart());
                                 plugin.getActiveSessions().put(playerId, session);
                                 player.sendMessage(ChatColor.GREEN + "Ты зашел на карту");
@@ -129,8 +133,8 @@ public class ParkourCommand {
                             location.setX(Math.round(location.getX() * 10) / 10.0);
                             location.setY(Math.round(location.getY() * 10) / 10.0);
                             location.setZ(Math.round(location.getZ() * 10) / 10.0);
-                            location.setYaw((float) (Math.round(location.getYaw() * 10) / 10.0));
-                            location.setPitch((float) (Math.round(location.getPitch() * 10) / 10.0));
+                            location.setYaw((float) (Math.round(location.getYaw() * 10) / 10.0)); // Сохраняем yaw
+                            location.setPitch((float) (Math.round(location.getPitch() * 10) / 10.0)); // Сохраняем pitch
 
                             Block block = location.getBlock();
                             block.setType(Material.STONE_PRESSURE_PLATE);
@@ -162,8 +166,8 @@ public class ParkourCommand {
                             location.setX(Math.round(location.getX() * 10) / 10.0);
                             location.setY(Math.round(location.getY() * 10) / 10.0);
                             location.setZ(Math.round(location.getZ() * 10) / 10.0);
-                            location.setYaw((float) (Math.round(location.getYaw() * 10) / 10.0));
-                            location.setPitch((float) (Math.round(location.getPitch() * 10) / 10.0));
+                            location.setYaw((float) (Math.round(location.getYaw() * 10) / 10.0)); // Сохраняем yaw
+                            location.setPitch((float) (Math.round(location.getPitch() * 10) / 10.0)); // Сохраняем pitch
 
                             Block block = location.getBlock();
                             block.setType(Material.HEAVY_WEIGHTED_PRESSURE_PLATE);

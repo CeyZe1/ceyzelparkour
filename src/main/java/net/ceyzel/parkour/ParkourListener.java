@@ -29,7 +29,10 @@ public class ParkourListener implements Listener {
             event.setKeepInventory(true);
             Bukkit.getScheduler().runTask(plugin, () -> {
                 player.spigot().respawn();
-                player.teleport(session.getLastCheckpoint().getLocation());
+                Location checkpointLocation = session.getLastCheckpoint().getLocation();
+                checkpointLocation.setYaw(session.getLastCheckpointLocation().getYaw()); // Применяем yaw
+                checkpointLocation.setPitch(session.getLastCheckpointLocation().getPitch()); // Применяем pitch
+                player.teleport(checkpointLocation);
             });
         }
     }
