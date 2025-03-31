@@ -104,12 +104,15 @@ public class CeyZelParkour extends JavaPlugin {
     public void loadMaps() {
         for (String mapName : getConfig().getKeys(false)) {
             if (getConfig().contains(mapName + ".start") && getConfig().contains(mapName + ".finish")) {
-                Block start = getConfig().getLocation(mapName + ".start").getBlock();
-                Block finish = getConfig().getLocation(mapName + ".finish").getBlock();
-                Difficulty difficulty = Difficulty.valueOf(getConfig().getString(mapName + ".difficulty", "EASY")); // Загрузка сложности
-                List<Location> checkpointLocations = (List<Location>) getConfig().getList(mapName + ".checkpoints");
+                Location startLoc = getConfig().getLocation(mapName + ".start");
+                Location finishLoc = getConfig().getLocation(mapName + ".finish");
 
-                if (start != null && finish != null) {
+                if (startLoc != null && finishLoc != null) {
+                    Block start = startLoc.getBlock();
+                    Block finish = finishLoc.getBlock();
+                    Difficulty difficulty = Difficulty.valueOf(getConfig().getString(mapName + ".difficulty", "EASY")); // Загрузка сложности
+                    List<Location> checkpointLocations = (List<Location>) getConfig().getList(mapName + ".checkpoints");
+
                     ParkourMap map = new ParkourMap(mapName, start, finish, difficulty, checkpointLocations != null ? checkpointLocations.stream()
                             .map(Location::getBlock)
                             .toList() : new ArrayList<>());

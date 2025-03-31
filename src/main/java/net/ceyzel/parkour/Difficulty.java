@@ -1,5 +1,8 @@
 package net.ceyzel.parkour;
 
+import lombok.Getter;
+
+@Getter
 public enum Difficulty {
     EASY(2),
     MEDIUM(5),
@@ -12,7 +15,4 @@ public enum Difficulty {
         this.score = score;
     }
 
-    public int getScore() {
-        return score;
-    }
 }
