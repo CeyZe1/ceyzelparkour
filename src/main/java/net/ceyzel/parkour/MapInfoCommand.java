@@ -14,7 +14,9 @@ import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-public class MapInfoCommand { private final CeyZelParkour plugin;
+public class MapInfoCommand {
+    private final CeyZelParkour plugin;
+
     public MapInfoCommand(CeyZelParkour plugin) {
         this.plugin = plugin;
     }
@@ -48,6 +50,7 @@ public class MapInfoCommand { private final CeyZelParkour plugin;
 
                             player.sendMessage("§6Информация о карте '" + map.getName() + "':");
                             player.sendMessage("§eПройдена: " + completions + " раз");
+                            player.sendMessage("§eСложность: " + map.getDifficulty().name()); // Отображение сложности
                             player.sendMessage("§eЛучшее время: " + (bestTime == Long.MAX_VALUE ? "No data" : plugin.getParkourTimer().formatDuration(Duration.ofMillis(bestTime * 1000))));
                             return 1;
                         })

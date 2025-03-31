@@ -1,6 +1,7 @@
 package net.ceyzel.parkour;
 
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -11,6 +12,7 @@ import java.util.*;
 
 public class CeyZelParkour extends JavaPlugin {
     private final Map<UUID, Double> playerScores = new HashMap<>();
+    @Getter
     private final Map<UUID, ParkourSession> activeSessions = new HashMap<>();
     private final Map<String, ParkourMap> parkourMaps = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> playerMapCompletions = new HashMap<>();
@@ -104,11 +106,11 @@ public class CeyZelParkour extends JavaPlugin {
             if (getConfig().contains(mapName + ".start") && getConfig().contains(mapName + ".finish")) {
                 Block start = getConfig().getLocation(mapName + ".start").getBlock();
                 Block finish = getConfig().getLocation(mapName + ".finish").getBlock();
-                double score = getConfig().getDouble(mapName + ".score");
+                Difficulty difficulty = Difficulty.valueOf(getConfig().getString(mapName + ".difficulty", "EASY")); // Загрузка сложности
                 List<Location> checkpointLocations = (List<Location>) getConfig().getList(mapName + ".checkpoints");
 
                 if (start != null && finish != null) {
-                    ParkourMap map = new ParkourMap(mapName, start, finish, score, checkpointLocations != null ? checkpointLocations.stream()
+                    ParkourMap map = new ParkourMap(mapName, start, finish, difficulty, checkpointLocations != null ? checkpointLocations.stream()
                             .map(Location::getBlock)
                             .toList() : new ArrayList<>());
                     this.parkourMaps.put(mapName, map);
@@ -130,7 +132,7 @@ public class CeyZelParkour extends JavaPlugin {
         if (map.getFinish() != null) {
             getConfig().set(map.getName() + ".finish", map.getFinish().getLocation());
         }
-        getConfig().set(map.getName() + ".score", map.getScore());
+        getConfig().set(map.getName() + ".difficulty", map.getDifficulty().name());
 
         List<Location> checkpointLocations = new ArrayList<>();
         for (Block checkpoint : map.getCheckpoints()) {
@@ -147,10 +149,6 @@ public class CeyZelParkour extends JavaPlugin {
 
     public Map<String, ParkourMap> getMaps() {
         return parkourMaps;
-    }
-
-    public Map<UUID, ParkourSession> getActiveSessions() {
-        return this.activeSessions;
     }
 
     public ParkourTimer getParkourTimer() {

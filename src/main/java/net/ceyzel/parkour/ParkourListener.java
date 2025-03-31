@@ -51,9 +51,9 @@ public class ParkourListener implements Listener {
             if (map != null) {
                 if (map.getFinish() != null && map.getFinish().equals(toBlock)) {
                     Duration time = plugin.getParkourTimer().getElapsedTime(player.getUniqueId());
-                    plugin.addPlayerScore(player.getUniqueId(), map.getScore());
+                    plugin.addPlayerScore(player.getUniqueId(), map.getDifficulty().getScore()); // Используем сложность
                     plugin.addMapCompletion(player.getUniqueId(), map.getName(), time.getSeconds());
-                    player.sendMessage("Карта пройдена, вы получаете " + map.getScore() + " поинтов. Время: " + plugin.getParkourTimer().formatDuration(time));
+                    player.sendMessage("Карта пройдена, вы получаете " + map.getDifficulty().getScore() + " поинтов. Время: " + plugin.getParkourTimer().formatDuration(time));
                     session.endSession();
                     plugin.getActiveSessions().remove(player.getUniqueId());
                     checkpointedPlayers.remove(player.getUniqueId());

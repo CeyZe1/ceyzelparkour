@@ -40,6 +40,7 @@ public class ParkourCommand {
                     sender.sendMessage(ChatColor.YELLOW + "/ceyzel setstart <name> " + ChatColor.GRAY + "- Поставить старт");
                     sender.sendMessage(ChatColor.YELLOW + "/ceyzel setcheckpoint <name> " + ChatColor.GRAY + "- Поставишь чекпоинт");
                     sender.sendMessage(ChatColor.YELLOW + "/ceyzel setfinish <name> " + ChatColor.GRAY + "- Поставить финиш");
+                    sender.sendMessage(ChatColor.YELLOW + "/ceyzel setdifficult <name> <difficulty> " + ChatColor.GRAY + "- Установить сложность карты");
                     sender.sendMessage(ChatColor.YELLOW + "/join <name> " + ChatColor.GRAY + "- Зайти на карту");
                     sender.sendMessage(ChatColor.YELLOW + "/ceyzel mapinfo <name> " + ChatColor.GRAY + "- Информация о карте");
                     sender.sendMessage(ChatColor.YELLOW + "/ceyzel remove <name> " + ChatColor.GRAY + "- Удалить карту");
@@ -49,8 +50,47 @@ public class ParkourCommand {
                 .then(setStartCommand())
                 .then(setCheckpointCommand())
                 .then(setFinishCommand())
+                .then(setDifficultyCommand())
                 .then(removeMapCommand())
-                .build(); // Преобразуем LiteralArgumentBuilder в LiteralCommandNode
+                .build();
+    }
+
+    private LiteralCommandNode<CommandSourceStack> setDifficultyCommand() {
+        return Commands.literal("setdifficult")
+                .then(Commands.argument("map", StringArgumentType.string())
+                        .suggests(this::suggestMaps)
+                        .then(Commands.argument("difficulty", StringArgumentType.string())
+                                .suggests((ctx, builder) -> {
+                                    for (Difficulty difficulty : Difficulty.values()) {
+                                        builder.suggest(difficulty.name());
+                                    }
+                                    return builder.buildFuture();
+                                })
+                                .executes(ctx -> {
+                                    var mapName = ctx.getArgument("map", String.class);
+                                    var difficultyName = ctx.getArgument("difficulty", String.class);
+                                    if (!(ctx.getSource().getSender() instanceof Player player)) {
+                                        ctx.getSource().getSender().sendMessage(ChatColor.RED + "Только игрок может использовать эту команду");
+                                        return 0;
+                                    }
+
+                                    ParkourMap map = plugin.getMap(mapName);
+                                    if (map == null) {
+                                        player.sendMessage(ChatColor.RED + "Карта не найдена");
+                                        return 0;
+                                    }
+
+                                    try {
+                                        Difficulty difficulty = Difficulty.valueOf(difficultyName.toUpperCase());
+                                        map.setDifficulty(difficulty);
+                                        plugin.saveMap(map);
+                                        player.sendMessage(ChatColor.GREEN + "Сложность карты '" + mapName + "' установлена на " + difficulty.name());
+                                    } catch (IllegalArgumentException e) {
+                                        player.sendMessage(ChatColor.RED + "Неверная сложность. Доступные сложности: EASY, MEDIUM, HARD, EXPERT");
+                                    }
+                                    return 1;
+                                })))
+                .build();
     }
 
     public LiteralCommandNode<CommandSourceStack> createJoinCommand() {
