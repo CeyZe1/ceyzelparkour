@@ -9,13 +9,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 public class ParkourListener implements Listener {
     private final CeyZelParkour plugin;
-    private final Set checkpointedPlayers = new HashSet<>();
+    private final Set<UUID> checkpointedPlayers = new HashSet<>();
 
     public ParkourListener(CeyZelParkour plugin) {
         this.plugin = plugin;
@@ -48,10 +50,11 @@ public class ParkourListener implements Listener {
 
             if (map != null) {
                 if (map.getFinish() != null && map.getFinish().equals(toBlock)) {
-                    long time = (System.currentTimeMillis() - session.getStartTime());
+                    Duration time = plugin.getParkourTimer().getElapsedTime(player.getUniqueId());
                     plugin.addPlayerScore(player.getUniqueId(), map.getScore());
-                    plugin.addMapCompletion(player.getUniqueId(), map.getName(), time / 1000);
-                    player.sendMessage("Карта пройдена, вы получаете " + map.getScore() + " поинтов. Время: " + plugin.formatTime(time));
+                    plugin.addMapCompletion(player.getUniqueId(), map.getName(), time.getSeconds());
+                    player.sendMessage("Карта пройдена, вы получаете " + map.getScore() + " поинтов. Время: " + plugin.getParkourTimer().formatDuration(time));
+                    session.endSession();
                     plugin.getActiveSessions().remove(player.getUniqueId());
                     checkpointedPlayers.remove(player.getUniqueId());
                     Location lobbyLocation = plugin.getLobbyLocation();

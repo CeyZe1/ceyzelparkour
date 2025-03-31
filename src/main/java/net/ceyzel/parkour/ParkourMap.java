@@ -1,14 +1,20 @@
 package net.ceyzel.parkour;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.block.Block;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class ParkourMap {
     private final String name;
+    @Setter
     private Block start;
+    @Setter
     private Block finish;
+    @Setter
     private double score;
     private final List<Block> checkpoints;
 
@@ -23,38 +29,6 @@ public class ParkourMap {
         this.finish = finish;
         this.score = score;
         this.checkpoints = checkpoints;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Block getStart() {
-        return start;
-    }
-
-    public void setStart(Block start) {
-        this.start = start;
-    }
-
-    public Block getFinish() {
-        return finish;
-    }
-
-    public void setFinish(Block finish) {
-        this.finish = finish;
-    }
-
-    public double getScore() {
-        return score;
-    }
-
-    public void setScore(double score) {
-        this.score = score;
-    }
-
-    public List<Block> getCheckpoints() {
-        return checkpoints;
     }
 
     public void addCheckpoint(Block block) {

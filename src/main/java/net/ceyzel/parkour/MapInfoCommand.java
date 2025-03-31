@@ -10,6 +10,7 @@ import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -45,9 +46,9 @@ public class MapInfoCommand { private final CeyZelParkour plugin;
                             int completions = plugin.getMapCompletions(playerId, map.getName());
                             long bestTime = plugin.getBestTime(playerId, map.getName());
 
-                            player.sendMessage(ChatColor.GOLD + "Информация о карте '" + map.getName() + "':");
-                            player.sendMessage(ChatColor.YELLOW + "Пройдена: " + completions + " раз");
-                            player.sendMessage(ChatColor.YELLOW + "Лучшее время: " + (bestTime == Long.MAX_VALUE ? "No data" : plugin.formatTime(bestTime * 1000)));
+                            player.sendMessage("§6Информация о карте '" + map.getName() + "':");
+                            player.sendMessage("§eПройдена: " + completions + " раз");
+                            player.sendMessage("§eЛучшее время: " + (bestTime == Long.MAX_VALUE ? "No data" : plugin.getParkourTimer().formatDuration(Duration.ofMillis(bestTime * 1000))));
                             return 1;
                         })
         ).build();

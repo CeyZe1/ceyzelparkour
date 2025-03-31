@@ -2,46 +2,36 @@ package net.ceyzel.parkour;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.jetbrains.annotations.NotNull;
+
 import java.util.UUID;
 
+import lombok.Getter;
+
+@Getter
 public class ParkourSession {
     private final UUID playerId;
     private final long startTime;
     private Block lastCheckpoint;
     private final String mapName;
-    private Location lastCheckpointLocation; // Новое поле для хранения координат и угла
+    private Location lastCheckpointLocation;
+    private final CeyZelParkour plugin;
 
-    public ParkourSession(UUID playerId, String mapName, Block start) {
+    public ParkourSession(UUID playerId, String mapName, Block start, CeyZelParkour plugin) {
         this.playerId = playerId;
         this.startTime = System.currentTimeMillis();
         this.mapName = mapName;
         this.lastCheckpoint = start;
-        this.lastCheckpointLocation = start.getLocation(); // Инициализация координат и угла
-    }
-
-    public @NotNull Block getLastCheckpoint() {
-        return lastCheckpoint;
-    }
-
-    public @NotNull UUID getPlayerId() {
-        return playerId;
-    }
-
-    public long getStartTime() {
-        return startTime;
-    }
-
-    public String getMapName() {
-        return mapName;
+        this.lastCheckpointLocation = start.getLocation();
+        this.plugin = plugin;
+        plugin.getParkourTimer().startTimer(playerId);
     }
 
     public void setLastCheckpoint(Block lastCheckpoint) {
         this.lastCheckpoint = lastCheckpoint;
-        this.lastCheckpointLocation = lastCheckpoint.getLocation(); // Обновление координат и угла
+        this.lastCheckpointLocation = lastCheckpoint.getLocation();
     }
 
-    public Location getLastCheckpointLocation() {
-        return lastCheckpointLocation;
+    public void endSession() {
+        plugin.getParkourTimer().stopTimer(playerId);
     }
 }

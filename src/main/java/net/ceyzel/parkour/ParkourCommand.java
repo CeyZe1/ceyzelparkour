@@ -86,7 +86,7 @@ public class ParkourCommand {
                                 startLocation.setPitch(map.getStart().getLocation().getPitch()); // Применяем pitch
                                 player.teleport(startLocation);
 
-                                ParkourSession session = new ParkourSession(playerId, map.getName(), map.getStart());
+                                ParkourSession session = new ParkourSession(playerId, map.getName(), map.getStart(), plugin);
                                 plugin.getActiveSessions().put(playerId, session);
                                 player.sendMessage(ChatColor.GREEN + "Ты зашел на карту");
                                 return 1;

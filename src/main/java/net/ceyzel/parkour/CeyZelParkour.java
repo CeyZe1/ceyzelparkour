@@ -4,8 +4,6 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nullable;
@@ -17,11 +15,12 @@ public class CeyZelParkour extends JavaPlugin {
     private final Map<String, ParkourMap> parkourMaps = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> playerMapCompletions = new HashMap<>();
     private final Map<UUID, Map<String, Long>> playerBestTimes = new HashMap<>();
-
+    private ParkourTimer parkourTimer;
     private Location lobbyLocation;
 
     @Override
     public void onEnable() {
+        parkourTimer = new ParkourTimer(this);
         loadPlayerScores();
         saveDefaultConfig();
         loadMaps();
@@ -37,7 +36,6 @@ public class CeyZelParkour extends JavaPlugin {
         });
 
         Bukkit.getPluginManager().registerEvents(new ParkourListener(this), this);
-        Bukkit.getScheduler().runTaskTimer(this, this::updateActionBars, 0L, 1L);
         LobbyHub.registerCommands(this);
     }
 
@@ -48,10 +46,13 @@ public class CeyZelParkour extends JavaPlugin {
 
     private void loadPlayerScores() {
         if (getConfig().contains("playerScores")) {
-            for (String key : getConfig().getConfigurationSection("playerScores").getKeys(false)) {
-                UUID playerId = UUID.fromString(key);
-                double score = getConfig().getDouble("playerScores." + key);
-                playerScores.put(playerId, score);
+            var section = getConfig().getConfigurationSection("playerScores");
+            if (section != null) {
+                for (String key : section.getKeys(false)) {
+                    UUID playerId = UUID.fromString(key);
+                    double score = getConfig().getDouble("playerScores." + key);
+                    playerScores.put(playerId, score);
+                }
             }
         }
     }
@@ -152,23 +153,8 @@ public class CeyZelParkour extends JavaPlugin {
         return this.activeSessions;
     }
 
-    private void updateActionBars() {
-        for (ParkourSession session : activeSessions.values()) {
-            Player player = Bukkit.getPlayer(session.getPlayerId());
-            if (player != null) {
-                long time = (System.currentTimeMillis() - session.getStartTime());
-                player.sendActionBar("§aВремя: §e" + formatTime(time));
-            }
-        }
-    }
-
-    public String formatTime(long millis) {
-        long hours = millis / 3600000;
-        long minutes = (millis % 3600000) / 60000;
-        long seconds = (millis % 60000) / 1000;
-        long milliseconds = millis % 1000;
-
-        return String.format("%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds);
+    public ParkourTimer getParkourTimer() {
+        return parkourTimer;
     }
 
     public void addMapCompletion(UUID playerId, String mapName, long time) {

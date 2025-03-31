@@ -28,3 +28,7 @@ commands:
     description: ссанина
     usage: /mapinfo <название>
     permission: ceyzelparkour.mapinfo
+ # time:
+  # description: очко
+  # usage: /time <название>
+  # permission: ceyzelparkour.time
