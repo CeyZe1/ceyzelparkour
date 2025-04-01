@@ -32,12 +32,12 @@ public class CeyZelParkour extends JavaPlugin {
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             var cmd = new ParkourCommand(this);
             var info = new MapInfoCommand(this);
-            var timeCmd = new TimeCommand(this); // Добавляем новую команду
+            var timeCmd = new TimeCommand(this);
             var reg = commands.registrar();
             reg.register(cmd.createJoinCommand());
             reg.register(cmd.createCeyzelCommand());
             reg.register(info.asNode());
-            reg.register(timeCmd.asNode()); // Регистрируем команду /time
+            reg.register(timeCmd.asNode());
         });
 
         Bukkit.getPluginManager().registerEvents(new ParkourListener(this), this);
@@ -98,7 +98,7 @@ public class CeyZelParkour extends JavaPlugin {
                 if (startLoc != null && finishLoc != null) {
                     Block start = startLoc.getBlock();
                     Block finish = finishLoc.getBlock();
-                    Difficulty difficulty = Difficulty.valueOf(getConfig().getString(mapName + ".difficulty", "EASY")); // Загрузка сложности
+                    Difficulty difficulty = Difficulty.valueOf(getConfig().getString(mapName + ".difficulty", "EASY"));
                     List<Location> checkpointLocations = (List<Location>) getConfig().getList(mapName + ".checkpoints");
 
                     ParkourMap map = new ParkourMap(mapName, start, finish, difficulty, checkpointLocations != null ? checkpointLocations.stream()
