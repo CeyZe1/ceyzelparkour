@@ -32,14 +32,20 @@ public class CeyZelParkour extends JavaPlugin {
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             var cmd = new ParkourCommand(this);
             var info = new MapInfoCommand(this);
+            var timeCmd = new TimeCommand(this); // Добавляем новую команду
             var reg = commands.registrar();
             reg.register(cmd.createJoinCommand());
             reg.register(cmd.createCeyzelCommand());
             reg.register(info.asNode());
+            reg.register(timeCmd.asNode()); // Регистрируем команду /time
         });
 
         Bukkit.getPluginManager().registerEvents(new ParkourListener(this), this);
         LobbyHub.registerCommands(this);
+    }
+
+    public Map<UUID, Map<String, Long>> getPlayerBestTimes() {
+        return playerBestTimes;
     }
 
     @Override
