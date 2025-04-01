@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 public class CeyZelParkour extends JavaPlugin {
@@ -17,7 +16,9 @@ public class CeyZelParkour extends JavaPlugin {
     private final Map<String, ParkourMap> parkourMaps = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> playerMapCompletions = new HashMap<>();
     private final Map<UUID, Map<String, Long>> playerBestTimes = new HashMap<>();
+    @Getter
     private ParkourTimer parkourTimer;
+    @Getter
     private Location lobbyLocation;
 
     @Override
@@ -69,25 +70,6 @@ public class CeyZelParkour extends JavaPlugin {
     public void addPlayerScore(UUID playerId, double score) {
         playerScores.put(playerId, playerScores.getOrDefault(playerId, 0.0) + score);
         savePlayerScores();
-    }
-
-    public double getPlayerTotalScore(UUID playerId) {
-        return playerScores.getOrDefault(playerId, 0.0);
-    }
-
-    private @Nullable Location locationByPath(String path) {
-        String worldName = getConfig().getString(path + ".world");
-        if (worldName != null && Bukkit.getWorld(worldName) != null) {
-            return new Location(
-                    Bukkit.getWorld(worldName),
-                    getConfig().getDouble(path + ".x"),
-                    getConfig().getDouble(path + ".y"),
-                    getConfig().getDouble(path + ".z"),
-                    (float) getConfig().getDouble(path + ".yaw"),
-                    (float) getConfig().getDouble(path + ".pitch"));
-        }
-        this.getLogger().warning(String.format("%s неправильное значение", path));
-        return null;
     }
 
     private void loadLocationsFromConfig() {
@@ -154,13 +136,9 @@ public class CeyZelParkour extends JavaPlugin {
         return parkourMaps;
     }
 
-    public ParkourTimer getParkourTimer() {
-        return parkourTimer;
-    }
-
     public void addMapCompletion(UUID playerId, String mapName, long time) {
         playerMapCompletions.computeIfAbsent(playerId, k -> new HashMap<>()).merge(mapName, 1, Integer::sum);
-        playerBestTimes.computeIfAbsent(playerId, k -> new HashMap<>()).merge(mapName, time, (oldTime, newTime) -> Math.min(oldTime, newTime));
+        playerBestTimes.computeIfAbsent(playerId, k -> new HashMap<>()).merge(mapName, time, Math::min);
     }
 
     public int getMapCompletions(UUID playerId, String mapName) {
@@ -171,7 +149,4 @@ public class CeyZelParkour extends JavaPlugin {
         return playerBestTimes.getOrDefault(playerId, new HashMap<>()).getOrDefault(mapName, Long.MAX_VALUE);
     }
 
-    public Location getLobbyLocation() {
-        return lobbyLocation;
-    }
 }
