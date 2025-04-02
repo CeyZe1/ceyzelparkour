@@ -35,13 +35,13 @@ public class ParkourCommand {
                 .requires(stack -> stack.getSender().hasPermission("ceyzelparkour.admin"))
                 .executes(ctx -> {
                     var sender = ctx.getSource().getSender();
-                    sender.sendMessage(ChatColor.GOLD + "CeyzelParkour Commands:");
+                    sender.sendMessage(ChatColor.GOLD + "Команды CeyzelParkour:");
                     sender.sendMessage(ChatColor.YELLOW + "/ceyzel create <name> " + ChatColor.GRAY + "- Создать карту");
-                    sender.sendMessage(ChatColor.YELLOW + "/ceyzel setstart <name> " + ChatColor.GRAY + "- Поставить старт");
-                    sender.sendMessage(ChatColor.YELLOW + "/ceyzel setcheckpoint <name> " + ChatColor.GRAY + "- Поставишь чекпоинт");
-                    sender.sendMessage(ChatColor.YELLOW + "/ceyzel setfinish <name> " + ChatColor.GRAY + "- Поставить финиш");
-                    sender.sendMessage(ChatColor.YELLOW + "/ceyzel setdifficult <name> <difficulty> " + ChatColor.GRAY + "- Установить сложность карты");
-                    sender.sendMessage(ChatColor.YELLOW + "/join <name> " + ChatColor.GRAY + "- Зайти на карту");
+                    sender.sendMessage(ChatColor.YELLOW + "/ceyzel setstart <name> " + ChatColor.GRAY + "- Установить стартовую точку");
+                    sender.sendMessage(ChatColor.YELLOW + "/ceyzel setcheckpoint <name> " + ChatColor.GRAY + "- Установить чекпоинт");
+                    sender.sendMessage(ChatColor.YELLOW + "/ceyzel setfinish <name> " + ChatColor.GRAY + "- Установить финишную точку");
+                    sender.sendMessage(ChatColor.YELLOW + "/ceyzel setdifficulty <name> <difficulty> " + ChatColor.GRAY + "- Установить сложность карты");
+                    sender.sendMessage(ChatColor.YELLOW + "/join <name> " + ChatColor.GRAY + "- Присоединиться к карте");
                     sender.sendMessage(ChatColor.YELLOW + "/ceyzel mapinfo <name> " + ChatColor.GRAY + "- Информация о карте");
                     sender.sendMessage(ChatColor.YELLOW + "/ceyzel remove <name> " + ChatColor.GRAY + "- Удалить карту");
                     return 1;
@@ -56,7 +56,7 @@ public class ParkourCommand {
     }
 
     private LiteralCommandNode<CommandSourceStack> setDifficultyCommand() {
-        return Commands.literal("setdifficult")
+        return Commands.literal("setdifficulty")
                 .then(Commands.argument("map", StringArgumentType.string())
                         .suggests(this::suggestMaps)
                         .then(Commands.argument("difficulty", StringArgumentType.string())
@@ -97,7 +97,7 @@ public class ParkourCommand {
         return Commands.literal("join")
                 .requires(ctx -> ctx.getSender().hasPermission("ceyzel.join"))
                 .executes(ctx -> {
-                    ctx.getSource().getSender().sendMessage("Используй /join <название>");
+                    ctx.getSource().getSender().sendMessage("Используй /join <название карты>");
                     return 0;
                 })
                 .then(Commands.argument("map", StringArgumentType.string())
@@ -122,8 +122,8 @@ public class ParkourCommand {
                                 }
 
                                 Location startLocation = map.getStart().getLocation();
-                                startLocation.setYaw(map.getStart().getLocation().getYaw()); // Применяем yaw
-                                startLocation.setPitch(map.getStart().getLocation().getPitch()); // Применяем pitch
+                                startLocation.setYaw(map.getStart().getLocation().getYaw());
+                                startLocation.setPitch(map.getStart().getLocation().getPitch());
                                 player.teleport(startLocation);
 
                                 ParkourSession session = new ParkourSession(playerId, map.getName(), map.getStart(), plugin);
@@ -171,7 +171,7 @@ public class ParkourCommand {
 
                             Location location = player.getLocation();
                             map.setStart(location.getBlock());
-                            map.setStartLocation(location); // Сохраняем полную информацию о локации
+                            map.setStartLocation(location);
                             plugin.saveMap(map);
                             player.sendMessage(ChatColor.GREEN + "Стартовая точка установлена");
                             return 1;
@@ -185,7 +185,7 @@ public class ParkourCommand {
                         .executes(ctx -> {
                             var mapName = ctx.getArgument("map", String.class);
                             if (!(ctx.getSource().getSender() instanceof Player player)) {
-                                ctx.getSource().getSender().sendMessage(ChatColor.RED + "Только игроки могут использовать эту команду");
+                                ctx.getSource().getSender().sendMessage(ChatColor.RED + "Только игрок может использовать эту команду");
                                 return 0;
                             }
 
@@ -197,7 +197,7 @@ public class ParkourCommand {
 
                             Location location = player.getLocation();
                             map.addCheckpoint(location.getBlock());
-                            map.addCheckpointLocation(location); // Сохраняем полную информацию о локации
+                            map.addCheckpointLocation(location);
                             plugin.saveMap(map);
                             player.sendMessage(ChatColor.GREEN + "Чекпоинт добавлен!");
                             return 1;
@@ -211,7 +211,7 @@ public class ParkourCommand {
                         .executes(ctx -> {
                             var mapName = ctx.getArgument("map", String.class);
                             if (!(ctx.getSource().getSender() instanceof Player player)) {
-                                ctx.getSource().getSender().sendMessage(ChatColor.RED + "Только игроки могут использовать эту команду");
+                                ctx.getSource().getSender().sendMessage(ChatColor.RED + "Только игрок может использовать эту команду");
                                 return 0;
                             }
 

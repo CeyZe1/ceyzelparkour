@@ -51,7 +51,7 @@ public class MapInfoCommand {
                             player.sendMessage("§6Информация о карте '" + map.getName() + "':");
                             player.sendMessage("§eПройдена: " + completions + " раз");
                             player.sendMessage("§eСложность: " + map.getDifficulty().name());
-                            player.sendMessage("§eЛучшее время: " + (bestTime == Long.MAX_VALUE ? "No data" : plugin.getParkourTimer().formatDuration(Duration.ofMillis(bestTime))));
+                            player.sendMessage("§eЛучшее время: " + (bestTime == Long.MAX_VALUE ? "Нет данных" : plugin.getParkourTimer().formatDuration(Duration.ofMillis(bestTime))));
                             return 1;
                         })
         ).build();

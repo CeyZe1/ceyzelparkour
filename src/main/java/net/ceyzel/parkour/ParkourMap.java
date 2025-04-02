@@ -18,8 +18,11 @@ public class ParkourMap {
     @Setter
     private Difficulty difficulty;
     private final List<Block> checkpoints;
-    private Location startLocation; // Убрано final
-    private List<Location> checkpointLocations = new ArrayList<>(); // Убрано final
+    @Getter
+    @Setter
+    private Location startLocation;
+    @Getter
+    private final List<Location> checkpointLocations = new ArrayList<>();
 
     public ParkourMap(String name) {
         this.name = name;
@@ -41,17 +44,5 @@ public class ParkourMap {
 
     public void addCheckpointLocation(Location location) {
         checkpointLocations.add(location);
-    }
-
-    public void setStartLocation(Location location) {
-        this.startLocation = location;
-    }
-
-    public Location getStartLocation() {
-        return startLocation;
-    }
-
-    public List<Location> getCheckpointLocations() {
-        return checkpointLocations;
     }
 }

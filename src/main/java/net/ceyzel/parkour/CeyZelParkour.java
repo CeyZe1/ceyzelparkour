@@ -7,7 +7,11 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class CeyZelParkour extends JavaPlugin {
     private final Map<UUID, Double> playerScores = new HashMap<>();
@@ -15,6 +19,7 @@ public class CeyZelParkour extends JavaPlugin {
     private final Map<UUID, ParkourSession> activeSessions = new HashMap<>();
     private final Map<String, ParkourMap> parkourMaps = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> playerMapCompletions = new HashMap<>();
+    @Getter
     private final Map<UUID, Map<String, Long>> playerBestTimes = new HashMap<>();
     @Getter
     private ParkourTimer parkourTimer;
@@ -42,10 +47,6 @@ public class CeyZelParkour extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new ParkourListener(this), this);
         LobbyHub.registerCommands(this);
-    }
-
-    public Map<UUID, Map<String, Long>> getPlayerBestTimes() {
-        return playerBestTimes;
     }
 
     @Override
@@ -82,10 +83,10 @@ public class CeyZelParkour extends JavaPlugin {
         if (getConfig().contains("lobby_location")) {
             this.lobbyLocation = getConfig().getLocation("lobby_location");
             if (this.lobbyLocation == null) {
-                getLogger().warning("lobby_location не валиден");
+                getLogger().warning("Лобби_локейшион соснул");
             }
         } else {
-            getLogger().warning("lobby_location не найден");
+            getLogger().warning("Лобби_локейшион глотает хуй");
         }
     }
 
@@ -104,15 +105,15 @@ public class CeyZelParkour extends JavaPlugin {
                     ParkourMap map = new ParkourMap(mapName, start, finish, difficulty, checkpointLocations != null ? checkpointLocations.stream()
                             .map(Location::getBlock)
                             .toList() : new ArrayList<>());
-                    map.setStartLocation(startLoc); // Устанавливаем полную локацию старта
+                    map.setStartLocation(startLoc);
                     if (checkpointLocations != null) {
                         for (Location loc : checkpointLocations) {
-                            map.addCheckpointLocation(loc); // Устанавливаем полные локации чекпоинтов
+                            map.addCheckpointLocation(loc);
                         }
                     }
                     this.parkourMaps.put(mapName, map);
                 } else {
-                    getLogger().warning("Карта " + mapName + ": стартовая/финишная точка не найдена");
+                    getLogger().warning("Карта " + mapName + ": стартовая/финишная точка не найдены");
                 }
             }
         }
@@ -157,5 +158,4 @@ public class CeyZelParkour extends JavaPlugin {
     public long getBestTime(UUID playerId, String mapName) {
         return playerBestTimes.getOrDefault(playerId, new HashMap<>()).getOrDefault(mapName, Long.MAX_VALUE);
     }
-
 }

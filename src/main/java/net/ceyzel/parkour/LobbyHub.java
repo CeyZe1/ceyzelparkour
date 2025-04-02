@@ -9,11 +9,11 @@ public class LobbyHub {
     public static void registerCommands(CeyZelParkour plugin) {
         BasicCommand lobby = (commandSourceStack, strings) -> {
             if (commandSourceStack.getExecutor() instanceof Player player) {
-                Location lobbyLocation = plugin.getLobbyLocation(); // Используем геттер
+                Location lobbyLocation = plugin.getLobbyLocation();
                 if (lobbyLocation != null) {
                     player.teleport(lobbyLocation);
                 } else {
-                    player.sendMessage("Лобби локейшион не найдено!");
+                    player.sendMessage("Локация лобби не найдена!");
                 }
             }
         };
@@ -26,7 +26,7 @@ public class LobbyHub {
                 if (commandSourceStack.getExecutor() instanceof Player executor) {
                     ParkourSession session = plugin.getActiveSessions().get(executor.getUniqueId());
                     if (session != null) {
-                        Location checkpointLocation = session.getLastCheckpointLocation(); // Используем сохраненную локацию
+                        Location checkpointLocation = session.getLastCheckpointLocation();
                         executor.teleport(checkpointLocation);
                     } else {
                         executor.sendMessage("Ты не на карте!");

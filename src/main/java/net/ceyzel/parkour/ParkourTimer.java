@@ -28,33 +28,29 @@ public class ParkourTimer {
     }
 
     public Duration getElapsedTime(UUID playerId) {
-        Instant startTime = startTimes.get(playerId);
-        if (startTime != null) {
-            return Duration.between(startTime, Instant.now());
-        }
-        return Duration.ZERO;
+        return startTimes.containsKey(playerId) ? Duration.between(startTimes.get(playerId), Instant.now()) : Duration.ZERO;
     }
 
     private void startTimerTask() {
         new BukkitRunnable() {
             @Override
             public void run() {
-                for (Map.Entry<UUID, Instant> entry : startTimes.entrySet()) {
-                    Player player = Bukkit.getPlayer(entry.getKey());
+                startTimes.forEach((playerId, startTime) -> {
+                    Player player = Bukkit.getPlayer(playerId);
                     if (player != null) {
-                        Duration elapsedTime = Duration.between(entry.getValue(), Instant.now());
+                        Duration elapsedTime = Duration.between(startTime, Instant.now());
                         player.sendActionBar(net.kyori.adventure.text.Component.text("§aВремя: §e" + formatDuration(elapsedTime)));
                     }
-                }
+                });
             }
-        }.runTaskTimer(plugin, 0L, 1L); // Обновление каждый тик
+        }.runTaskTimer(plugin, 0L, 1L);
     }
 
     public String formatDuration(Duration duration) {
         long hours = duration.toHours();
-        long minutes = duration.toMinutes() % 60;
-        long seconds = duration.getSeconds() % 60;
-        long millis = duration.toMillis() % 1000;
+        long minutes = duration.toMinutesPart();
+        long seconds = duration.toSecondsPart();
+        long millis = duration.toMillisPart();
 
         return String.format("%02d:%02d:%02d.%03d", hours, minutes, seconds, millis);
     }

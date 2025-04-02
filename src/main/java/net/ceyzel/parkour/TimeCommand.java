@@ -60,7 +60,7 @@ public class TimeCommand {
                             for (int i = 0; i < Math.min(sortedTimes.size(), 10); i++) {
                                 Map.Entry<UUID, Long> entry = sortedTimes.get(i);
                                 Player topPlayer = Bukkit.getPlayer(entry.getKey());
-                                String playerName = topPlayer != null ? topPlayer.getName() : "Unknown";
+                                String playerName = topPlayer != null ? topPlayer.getName() : "Неизвестно";
                                 String time = plugin.getParkourTimer().formatDuration(Duration.ofMillis(entry.getValue()));
                                 player.sendMessage(ChatColor.YELLOW + String.valueOf(i + 1) + ". " + playerName + " - " + time);
                             }

@@ -1,5 +1,6 @@
 package net.ceyzel.parkour;
 
+import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
@@ -13,6 +14,7 @@ public class ParkourSession {
     private final long startTime;
     private Block lastCheckpoint;
     private final String mapName;
+    @Setter
     private Location lastCheckpointLocation;
     private final CeyZelParkour plugin;
 
@@ -29,10 +31,6 @@ public class ParkourSession {
     public void setLastCheckpoint(Block lastCheckpoint) {
         this.lastCheckpoint = lastCheckpoint;
         this.lastCheckpointLocation = lastCheckpoint.getLocation();
-    }
-
-    public void setLastCheckpointLocation(Location location) {
-        this.lastCheckpointLocation = location;
     }
 
     public void endSession() {
