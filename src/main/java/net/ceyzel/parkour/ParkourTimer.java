@@ -47,7 +47,7 @@ public class ParkourTimer {
                     }
                 }
             }
-        }.runTaskTimer(plugin, 0L, 20L); // Обновление каждую секунду
+        }.runTaskTimer(plugin, 0L, 1L); // Обновление каждый тик
     }
 
     public String formatDuration(Duration duration) {
