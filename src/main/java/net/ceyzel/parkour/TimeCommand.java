@@ -30,7 +30,7 @@ public class TimeCommand {
     }
 
     public LiteralCommandNode<CommandSourceStack> asNode() {
-        return Commands.literal("time").then(
+        return Commands.literal("maptime").then(
                 Commands.argument("map", StringArgumentType.string())
                         .suggests(this::suggestMaps)
                         .executes(ctx -> {
@@ -53,7 +53,6 @@ public class TimeCommand {
                                 }
                             }
 
-                            // Сортировка
                             List<Map.Entry<UUID, Long>> sortedTimes = new ArrayList<>(bestTimes.entrySet());
                             sortedTimes.sort(Map.Entry.comparingByValue());
 
@@ -62,7 +61,7 @@ public class TimeCommand {
                                 Map.Entry<UUID, Long> entry = sortedTimes.get(i);
                                 Player topPlayer = Bukkit.getPlayer(entry.getKey());
                                 String playerName = topPlayer != null ? topPlayer.getName() : "Unknown";
-                                String time = plugin.getParkourTimer().formatDuration(Duration.ofSeconds(entry.getValue()));
+                                String time = plugin.getParkourTimer().formatDuration(Duration.ofMillis(entry.getValue()));
                                 player.sendMessage(ChatColor.YELLOW + String.valueOf(i + 1) + ". " + playerName + " - " + time);
                             }
 

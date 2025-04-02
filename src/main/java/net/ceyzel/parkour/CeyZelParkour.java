@@ -104,6 +104,12 @@ public class CeyZelParkour extends JavaPlugin {
                     ParkourMap map = new ParkourMap(mapName, start, finish, difficulty, checkpointLocations != null ? checkpointLocations.stream()
                             .map(Location::getBlock)
                             .toList() : new ArrayList<>());
+                    map.setStartLocation(startLoc); // Устанавливаем полную локацию старта
+                    if (checkpointLocations != null) {
+                        for (Location loc : checkpointLocations) {
+                            map.addCheckpointLocation(loc); // Устанавливаем полные локации чекпоинтов
+                        }
+                    }
                     this.parkourMaps.put(mapName, map);
                 } else {
                     getLogger().warning("Карта " + mapName + ": стартовая/финишная точка не найдена");
@@ -117,18 +123,15 @@ public class CeyZelParkour extends JavaPlugin {
             getLogger().warning("null");
             return;
         }
-        if (map.getStart() != null) {
-            getConfig().set(map.getName() + ".start", map.getStart().getLocation());
+        if (map.getStartLocation() != null) {
+            getConfig().set(map.getName() + ".start", map.getStartLocation());
         }
         if (map.getFinish() != null) {
             getConfig().set(map.getName() + ".finish", map.getFinish().getLocation());
         }
         getConfig().set(map.getName() + ".difficulty", map.getDifficulty().name());
 
-        List<Location> checkpointLocations = new ArrayList<>();
-        for (Block checkpoint : map.getCheckpoints()) {
-            checkpointLocations.add(checkpoint.getLocation());
-        }
+        List<Location> checkpointLocations = map.getCheckpointLocations();
         getConfig().set(map.getName() + ".checkpoints", checkpointLocations);
 
         saveConfig();

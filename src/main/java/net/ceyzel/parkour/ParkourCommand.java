@@ -170,15 +170,8 @@ public class ParkourCommand {
                             }
 
                             Location location = player.getLocation();
-                            location.setX(Math.round(location.getX() * 10) / 10.0);
-                            location.setY(Math.round(location.getY() * 10) / 10.0);
-                            location.setZ(Math.round(location.getZ() * 10) / 10.0);
-                            location.setYaw((float) (Math.round(location.getYaw() * 10) / 10.0)); // Сохраняем yaw
-                            location.setPitch((float) (Math.round(location.getPitch() * 10) / 10.0)); // Сохраняем pitch
-
-                            Block block = location.getBlock();
-                            block.setType(Material.STONE_PRESSURE_PLATE);
-                            map.setStart(block);
+                            map.setStart(location.getBlock());
+                            map.setStartLocation(location); // Сохраняем полную информацию о локации
                             plugin.saveMap(map);
                             player.sendMessage(ChatColor.GREEN + "Стартовая точка установлена");
                             return 1;
@@ -203,15 +196,8 @@ public class ParkourCommand {
                             }
 
                             Location location = player.getLocation();
-                            location.setX(Math.round(location.getX() * 10) / 10.0);
-                            location.setY(Math.round(location.getY() * 10) / 10.0);
-                            location.setZ(Math.round(location.getZ() * 10) / 10.0);
-                            location.setYaw((float) (Math.round(location.getYaw() * 10) / 10.0)); // Сохраняем yaw
-                            location.setPitch((float) (Math.round(location.getPitch() * 10) / 10.0)); // Сохраняем pitch
-
-                            Block block = location.getBlock();
-                            block.setType(Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
-                            map.addCheckpoint(block);
+                            map.addCheckpoint(location.getBlock());
+                            map.addCheckpointLocation(location); // Сохраняем полную информацию о локации
                             plugin.saveMap(map);
                             player.sendMessage(ChatColor.GREEN + "Чекпоинт добавлен!");
                             return 1;

@@ -26,9 +26,7 @@ public class LobbyHub {
                 if (commandSourceStack.getExecutor() instanceof Player executor) {
                     ParkourSession session = plugin.getActiveSessions().get(executor.getUniqueId());
                     if (session != null) {
-                        Location checkpointLocation = session.getLastCheckpoint().getLocation();
-                        checkpointLocation.setYaw(session.getLastCheckpointLocation().getYaw()); // Применяем yaw
-                        checkpointLocation.setPitch(session.getLastCheckpointLocation().getPitch()); // Применяем pitch
+                        Location checkpointLocation = session.getLastCheckpointLocation(); // Используем сохраненную локацию
                         executor.teleport(checkpointLocation);
                     } else {
                         executor.sendMessage("Ты не на карте!");
