@@ -27,7 +27,11 @@ public class LobbyHub {
                     ParkourSession session = plugin.getActiveSessions().get(executor.getUniqueId());
                     if (session != null) {
                         Location checkpointLocation = session.getLastCheckpointLocation();
-                        executor.teleport(checkpointLocation);
+                        if (checkpointLocation != null) {
+                            executor.teleport(checkpointLocation);
+                        } else {
+                            executor.sendMessage("Чекпоинт не найден!");
+                        }
                     } else {
                         executor.sendMessage("Ты не на карте!");
                     }

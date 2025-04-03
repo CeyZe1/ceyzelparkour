@@ -31,9 +31,7 @@ public class ParkourListener implements Listener {
             event.setKeepInventory(true);
             Bukkit.getScheduler().runTask(plugin, () -> {
                 player.spigot().respawn();
-                Location checkpointLocation = session.getLastCheckpoint().getLocation();
-                checkpointLocation.setYaw(session.getLastCheckpointLocation().getYaw());
-                checkpointLocation.setPitch(session.getLastCheckpointLocation().getPitch());
+                Location checkpointLocation = session.getLastCheckpointLocation();
                 player.teleport(checkpointLocation);
             });
         }
@@ -52,7 +50,7 @@ public class ParkourListener implements Listener {
                 if (map.getFinish() != null && map.getFinish().equals(toBlock)) {
                     Duration time = plugin.getParkourTimer().getElapsedTime(player.getUniqueId());
                     plugin.addPlayerScore(player.getUniqueId(), map.getDifficulty().getScore());
-                    plugin.addMapCompletion(player.getUniqueId(), map.getName(), time.getSeconds());
+                    plugin.addMapCompletion(player.getUniqueId(), map.getName(), time.toMillis()); // Store time in milliseconds
                     player.sendMessage("Карта пройдена, вы получаете " + map.getDifficulty().getScore() + " очков. Время: " + plugin.getParkourTimer().formatDuration(time));
                     session.endSession();
                     plugin.getActiveSessions().remove(player.getUniqueId());

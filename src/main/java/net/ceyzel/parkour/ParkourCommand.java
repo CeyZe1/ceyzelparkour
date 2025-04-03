@@ -121,9 +121,7 @@ public class ParkourCommand {
                                     return 0;
                                 }
 
-                                Location startLocation = map.getStart().getLocation();
-                                startLocation.setYaw(map.getStart().getLocation().getYaw());
-                                startLocation.setPitch(map.getStart().getLocation().getPitch());
+                                Location startLocation = map.getStartLocation();
                                 player.teleport(startLocation);
 
                                 ParkourSession session = new ParkourSession(playerId, map.getName(), map.getStart(), plugin);

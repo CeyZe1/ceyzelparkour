@@ -31,7 +31,10 @@ public class ParkourSession {
     public void setLastCheckpoint(Block lastCheckpoint) {
         this.lastCheckpoint = lastCheckpoint;
         this.lastCheckpointLocation = lastCheckpoint.getLocation();
+        this.lastCheckpointLocation.setYaw(lastCheckpointLocation.getYaw());
+        this.lastCheckpointLocation.setPitch(lastCheckpointLocation.getPitch());
     }
+
 
     public void endSession() {
         plugin.getParkourTimer().stopTimer(playerId);
