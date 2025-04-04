@@ -37,7 +37,7 @@ public class CeyZelParkour extends JavaPlugin {
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             var cmd = new ParkourCommand(this);
             var info = new MapInfoCommand(this);
-            var timeCmd = new TimeCommand(this);
+            var timeCmd = new MapTimeCommand(this);
             var reg = commands.registrar();
             reg.register(cmd.createJoinCommand());
             reg.register(cmd.createCeyzelCommand());

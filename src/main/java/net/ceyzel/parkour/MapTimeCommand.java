@@ -15,10 +15,10 @@ import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public class TimeCommand {
+public class MapTimeCommand {
     private final CeyZelParkour plugin;
 
-    public TimeCommand(CeyZelParkour plugin) {
+    public MapTimeCommand(CeyZelParkour plugin) {
         this.plugin = plugin;
     }
 
